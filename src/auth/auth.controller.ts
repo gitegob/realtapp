@@ -1,3 +1,4 @@
+import { LoginDto } from './dto/login.dto';
 import {
   Controller,
   Get,
@@ -21,5 +22,12 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Bad entries' })
   async signup(@Body() signupDto: SignupDto) {
     return { data: await this.authService.create(signupDto) };
+  }
+
+  @Post('/login')
+  @ApiResponse({ status: 201, description: 'Sign up successful' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async login(@Body() loginDto: LoginDto) {
+    return { data: { access_token: await this.authService.login(loginDto) } };
   }
 }

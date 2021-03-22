@@ -5,10 +5,10 @@ export const config = new DocumentBuilder()
   .setTitle('RealtApp')
   .setDescription('The RealtApp documentation')
   .setVersion('1.0.0')
+  .addTag('App', 'App welcome endpoint')
   .addTag('Auth', 'Authentication Endpoints')
-  .addTag('Bids', 'Bid Endpoints')
   .addTag('Houses', 'House Endpoints')
-  .addTag('App Welcome', 'App welcome endpoint')
+  .addTag('Bids', 'Bid Endpoints')
   .build();
 
 export const customOptions: SwaggerCustomOptions = {

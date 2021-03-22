@@ -1,16 +1,23 @@
+import { LoginDto } from './dto/login.dto';
 import { JwtPayload } from './../shared/interfaces/payload.interface';
 import { User } from './entities/auth.entity';
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SignupDto } from './dto/signup.dto';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async create(signupDto: SignupDto) {
@@ -28,7 +35,20 @@ export class AuthService {
   async findOne(options: any) {
     return await this.userRepo.findOne(options);
   }
-  validateUser(payload: JwtPayload) {
-    return null;
+  async login({ email, password }: LoginDto) {
+    const user = await this.findOne({ where: { email } });
+    if (!user) throw new UnauthorizedException('Invalid credentials');
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) throw new UnauthorizedException('Invalid credentials');
+    delete user.password;
+    const access_token = this.jwtService.sign({ ...user });
+    return access_token;
+  }
+  async validateUser(payload: JwtPayload) {
+    const user = await this.findOne({
+      where: { email: payload.email },
+    });
+    if (!user) throw new UnauthorizedException('Invalid token');
+    return user;
   }
 }
