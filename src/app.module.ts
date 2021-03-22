@@ -4,10 +4,10 @@ import { configService } from './config/config.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import ormconfig from '../ormconfig';
 
 @Module({
-  imports: [AuthModule,
-    TypeOrmModule.forRoot(configService.getTypeOrmConfig()),],
+  imports: [AuthModule, TypeOrmModule.forRoot(ormconfig)],
   controllers: [AppController],
   providers: [AppService],
 })
