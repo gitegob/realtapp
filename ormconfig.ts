@@ -11,6 +11,5 @@ const ormconfig: TypeOrmModuleOptions = {
   entities: ['./src/**/entities/*.entity.js'],
   synchronize: env.NODE_ENV !== 'production',
   autoLoadEntities: true,
-  ssl: env.NODE_ENV === 'production',
 };
 export default ormconfig;

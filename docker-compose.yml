@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:alpine
+    container_name: realtapp_db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    networks:
+      - realtapp-network
+    restart: always
+
+  api:
+    container_name: realtapp_api
+    environment:
+      DB_HOST: db
+    volumes:
+      - ./:/app
+    depends_on:
+      - db
+    networks:
+      - realtapp-network
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - '5000:5000'
+    restart: on-failure
+
+networks:
+  realtapp-network:
