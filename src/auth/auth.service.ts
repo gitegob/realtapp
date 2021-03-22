@@ -1,26 +1,34 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { JwtPayload } from './../shared/interfaces/payload.interface';
+import { User } from './entities/auth.entity';
+import { ConflictException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { SignupDto } from './dto/signup.dto';
+import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
+  ) {}
 
-  findAll() {
-    return `This action returns all auth`;
+  async create(signupDto: SignupDto) {
+    const user = await this.findOne({
+      where: { email: signupDto.email },
+    });
+    if (user) throw new ConflictException('User already exists');
+    const hash = await bcrypt.hash(signupDto.password, 10);
+    let newUser = new User();
+    newUser = { ...newUser, ...signupDto, password: hash };
+    await this.userRepo.save(newUser);
+    delete newUser.password;
+    return newUser;
   }
-
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
+  async findOne(options: any) {
+    return await this.userRepo.findOne(options);
   }
-
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  validateUser(payload: JwtPayload) {
+    return null;
   }
 }
