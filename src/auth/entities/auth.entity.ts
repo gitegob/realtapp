@@ -1,4 +1,5 @@
-import { PrimaryGeneratedColumn, Column, Entity } from 'typeorm';
+import { House } from '../../house/entities/house.entity';
+import { PrimaryGeneratedColumn, Column, Entity, OneToMany } from 'typeorm';
 
 @Entity('users')
 export class User {
@@ -19,4 +20,7 @@ export class User {
 
   @Column({ type: 'varchar', nullable: false })
   phone: string;
+
+  @OneToMany(() => House, (house) => house.owner)
+  houses: House[];
 }
