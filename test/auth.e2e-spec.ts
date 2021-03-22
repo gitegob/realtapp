@@ -4,6 +4,7 @@ import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { AppModule } from '../src/app.module';
+import mockData from './utils/mockData';
 
 describe('Auth', () => {
   let app: INestApplication;
@@ -23,13 +24,16 @@ describe('Auth', () => {
     await app.close();
   });
   it(`/POST signup`, async () => {
-    const res = await request(app.getHttpServer()).post('/auth/signup').send({
-      firstName: 'Brian',
-      lastName: 'Gitego',
-      email: 'test@test.com',
-      password: 'Password',
-      phone: '788555555',
-    });
+    const res = await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send(mockData.signup);
+    expect(res.status).toEqual(201);
+    return;
+  });
+  it(`/POST login`, async () => {
+    const res = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send(mockData.login);
     expect(res.status).toEqual(201);
     return;
   });
