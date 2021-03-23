@@ -3,13 +3,11 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   Req,
   UploadedFiles,
   UseInterceptors,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
@@ -21,6 +19,7 @@ import { editFileName, imageFileFilter } from '../utils/fileUpload.utils';
 import { diskStorage } from 'multer';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { HouseRoutesDto } from './dto/house-routes.dto';
 
 @ApiTags('Houses')
 @Controller('houses')
@@ -57,5 +56,20 @@ export class HouseController {
   ) {
     const user = <OwnerDto>req.user;
     return this.houseService.create(user, createHouseDto, files);
+  }
+
+  /**
+   * Get all house posts
+   * @req entry data
+   * @enum target type
+   * @return response
+   */
+  @ApiResponse({ status: 200, description: 'House found successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorised' })
+  @ApiResponse({ status: 500, description: 'Internal Server Error' })
+  @Get()
+  findAll(@Req() req: any, @Query() target: HouseRoutesDto) {
+    const user = <OwnerDto>req.user;
+    return this.houseService.findAll(user, target);
   }
 }
