@@ -12,4 +12,11 @@ export default {
     email: 'test@test.com',
     password: 'Password',
   },
+  house: {
+    title: 'Beautiful house',
+    description: "This is beautiful house, don't miss it",
+    district: 'KICUKIRO',
+    street: 'KK 440',
+    price: 20000,
+  },
 };

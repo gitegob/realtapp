@@ -1,7 +1,7 @@
-import { PassportModule } from '@nestjs/passport';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
+import { urlencoded, json } from 'express';
 import { AppModule } from './app.module';
 import { config, customOptions } from './config/swagger.config';
 import env from './env';
@@ -22,6 +22,14 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+  /**
+   * Set up bodyParser and data limit
+   */
+  app.use(json({ limit: '50mb' }));
+  app.use(
+    urlencoded({ limit: '50mb', extended: true, parameterLimit: 1000000 }),
+  );
+  app.enableCors();
   /**
    * Set up docs
    */
