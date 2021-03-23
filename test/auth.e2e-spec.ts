@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { AppModule } from '../src/app.module';
 import mockData from './utils/mockData';
 
-describe('Auth', () => {
+describe('AuthController (e2e)', () => {
   let app: INestApplication;
   let userRepo: Repository<User>;
   beforeAll(async () => {
@@ -34,7 +34,7 @@ describe('Auth', () => {
     const res = await request(app.getHttpServer())
       .post('/auth/login')
       .send(mockData.login);
-    expect(res.status).toEqual(201);
+    expect(res.status).toEqual(200);
     return;
   });
 });

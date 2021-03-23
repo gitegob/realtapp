@@ -20,6 +20,11 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
+  /** Service: Create a user
+   *
+   * @param signupDto
+   * @returns access_token
+   */
   async create(signupDto: SignupDto) {
     const user = await this.findOne({
       where: { email: signupDto.email },
@@ -30,11 +35,20 @@ export class AuthService {
     newUser = { ...newUser, ...signupDto, password: hash };
     await this.userRepo.save(newUser);
     delete newUser.password;
-    return newUser;
+    delete newUser.bids;
+    delete newUser.houses;
+    const access_token = this.jwtService.sign({ ...newUser });
+    return { access_token };
   }
   async findOne(options: any) {
     return await this.userRepo.findOne(options);
   }
+
+  /** Service: Find and login a user
+   *
+   * @param loginDto
+   * @returns access_token
+   */
   async login({ email, password }: LoginDto) {
     const user = await this.findOne({ where: { email } });
     if (!user) throw new UnauthorizedException('Invalid credentials');
@@ -42,8 +56,14 @@ export class AuthService {
     if (!match) throw new UnauthorizedException('Invalid credentials');
     delete user.password;
     const access_token = this.jwtService.sign({ ...user });
-    return access_token;
+    return { access_token };
   }
+
+  /** Service: Find a user by email
+   *
+   * @param payload
+   * @returns Promise<User>
+   */
   async validateUser(payload: JwtPayload) {
     const user = await this.findOne({
       where: { email: payload.email },
