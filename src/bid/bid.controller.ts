@@ -2,6 +2,7 @@ import { CreateBidDto } from './dto/create-bid.dto';
 import {
   Body,
   Controller,
+  Get,
   Param,
   ParseUUIDPipe,
   Post,
@@ -29,6 +30,7 @@ export class BidController {
    */
   @Post()
   @ApiResponse({ status: 201, description: 'Bid created' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 400, description: 'Wrong entries' })
   async create(
     @Body() createDto: CreateBidDto,
@@ -37,5 +39,39 @@ export class BidController {
     houseId: string,
   ) {
     return { data: await this.bidService.createBid(createDto, user, houseId) };
+  }
+  /** Route: Get all bids on a house
+   * @param user
+   * @param houseId
+   * @returns Promise<Bid[]>
+   */
+  @Get()
+  @ApiResponse({ status: 200, description: 'All Bids retrieved' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getBids(
+    @User() user: JwtPayload,
+    @Param('houseId', ParseUUIDPipe)
+    houseId: string,
+  ) {
+    return { data: await this.bidService.getAll(user, houseId) };
+  }
+
+  /** Route: Get a single bid on a house
+   * @param user
+   * @param houseId
+   * @param bidId
+   * @returns Promise<Bid>
+   */
+  @Get('/:bidId')
+  @ApiResponse({ status: 200, description: 'Bid retrieved' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getBid(
+    @User() user: JwtPayload,
+    @Param('houseId', ParseUUIDPipe)
+    houseId: string,
+    @Param('bidId', ParseUUIDPipe)
+    bidId: string,
+  ) {
+    return { data: await this.bidService.getOne(user, houseId, bidId) };
   }
 }

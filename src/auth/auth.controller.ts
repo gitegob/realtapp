@@ -1,8 +1,20 @@
 import { LoginDto } from './dto/login.dto';
-import { Controller, Post, Body, HttpCode } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  Get,
+  UseGuards,
+  ParseUUIDPipe,
+  Param,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
+import { User } from '../shared/decorators/user.decorator';
+import { AuthGuard } from '@nestjs/passport';
+import { JwtPayload } from '../shared/interfaces/payload.interface';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -32,5 +44,36 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
   async login(@Body() loginDto: LoginDto) {
     return { data: await this.authService.login(loginDto) };
+  }
+
+  /** Route: Get all bids by a user
+   * @param user
+   * @returns Promise<Bid[]>
+   */
+  @Get('/bids')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  @ApiResponse({ status: 200, description: 'All Bids retrieved' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getBids(@User() user: JwtPayload) {
+    return { data: await this.authService.getUserBids(user) };
+  }
+
+  /** Route: Get a single bid by a user
+   * @param user
+   * @param bidId
+   * @returns Promise<Bid>
+   */
+  @Get('/bids/:bidId')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  @ApiResponse({ status: 200, description: 'Bid retrieved' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getBid(
+    @User() user: JwtPayload,
+    @Param('bidId', ParseUUIDPipe)
+    bidId: string,
+  ) {
+    return { data: await this.authService.getUserBid(user, bidId) };
   }
 }

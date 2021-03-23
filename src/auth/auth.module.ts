@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import env from '../env';
 import { User } from './entities/auth.entity';
+import { BidModule } from '../bid/bid.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { User } from './entities/auth.entity';
         expiresIn: env.JWT_EXPIRES_IN,
       },
     }),
+    BidModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

@@ -11,6 +11,7 @@ import { SignupDto } from './dto/signup.dto';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { BidService } from '../bid/bid.service';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,7 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
     private readonly jwtService: JwtService,
+    private readonly bidService: BidService,
   ) {}
 
   /** Service: Create a user
@@ -35,8 +37,6 @@ export class AuthService {
     newUser = { ...newUser, ...signupDto, password: hash };
     await this.userRepo.save(newUser);
     delete newUser.password;
-    delete newUser.bids;
-    delete newUser.houses;
     const access_token = this.jwtService.sign({ ...newUser });
     return { access_token };
   }
@@ -59,7 +59,7 @@ export class AuthService {
     return { access_token };
   }
 
-  /** Service: Find a user by email
+  /** Service: Find and validate a user by email
    *
    * @param payload
    * @returns Promise<User>
@@ -69,6 +69,31 @@ export class AuthService {
       where: { email: payload.email },
     });
     if (!user) throw new UnauthorizedException('Invalid token');
+    delete user.password;
     return user;
+  }
+
+  /** Service: Get all bids of a user
+   * @param user
+   * @returns Promise<Bid[]>
+   */
+  async getUserBids(user: any) {
+    const bids = await this.bidService.find({
+      where: { bidder: user },
+      relations: ['house'],
+    });
+    return bids;
+  }
+  /** Service: Get one bid of a user
+   * @param user
+   * @param bidId
+   * @returns Promise<Bid>
+   */
+  async getUserBid(user: any, bidId: string) {
+    const bid = await this.bidService.findOne({
+      where: { id: bidId, bidder: user },
+      relations: ['house'],
+    });
+    return bid;
   }
 }

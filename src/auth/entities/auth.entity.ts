@@ -22,8 +22,8 @@ export class User {
   @Column({ type: 'varchar', nullable: false })
   phone: string;
 
-  @OneToMany(() => House, (house) => house.owner)
+  @OneToMany(() => House, (house) => house.owner, { onDelete: 'CASCADE' })
   houses: House[];
-  @OneToMany(() => Bid, (bid) => bid.bidder)
+  @OneToMany(() => Bid, (bid) => bid.bidder, { onDelete: 'CASCADE' })
   bids: Bid[];
 }
