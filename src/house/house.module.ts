@@ -9,5 +9,6 @@ import { AuthModule } from '../auth/auth.module';
   imports: [TypeOrmModule.forFeature([House]), AuthModule],
   controllers: [HouseController],
   providers: [HouseService],
+  exports: [HouseService],
 })
 export class HouseModule {}

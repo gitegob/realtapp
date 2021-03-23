@@ -1,6 +1,8 @@
 export default {
   token1: '',
   token2: '',
+  houseId1: '',
+  houseId2: '',
   signup: {
     firstName: 'Brian',
     lastName: 'Gitego',
@@ -18,5 +20,8 @@ export default {
     district: 'KICUKIRO',
     street: 'KK 440',
     price: 20000,
+  },
+  bid: {
+    price: 300000,
   },
 };

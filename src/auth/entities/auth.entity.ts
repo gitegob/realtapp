@@ -1,5 +1,6 @@
 import { House } from '../../house/entities/house.entity';
 import { PrimaryGeneratedColumn, Column, Entity, OneToMany } from 'typeorm';
+import { Bid } from '../../bid/entities/bid.entity';
 
 @Entity('users')
 export class User {
@@ -23,4 +24,6 @@ export class User {
 
   @OneToMany(() => House, (house) => house.owner)
   houses: House[];
+  @OneToMany(() => Bid, (bid) => bid.bidder)
+  bids: Bid[];
 }

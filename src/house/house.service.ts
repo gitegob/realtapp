@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from '../auth/auth.service';
 import { OwnerDto } from '../auth/dto/owner.dto';
@@ -32,5 +32,14 @@ export class HouseService {
     const createdHouse = await this.HouseRepo.save(house);
     delete createdHouse.owner.password;
     return { message: 'House successfully posted', data: createdHouse };
+  }
+
+  async findOne(id: string) {
+    const house = await this.HouseRepo.findOne(id);
+    if (!house)
+      throw new NotFoundException(
+        'Sorry, That House is not found. Kindly try with another.',
+      );
+    return house;
   }
 }

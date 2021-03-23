@@ -7,7 +7,9 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
+import { Bid } from '../../bid/entities/bid.entity';
 
 @Entity({ name: 'houses' })
 export class House {
@@ -38,9 +40,11 @@ export class House {
   @Column('text', { array: true })
   pictures: string[];
 
-  @ManyToOne(() => User, {
+  @ManyToOne(() => User, (user: User) => user.houses)
+  owner: User;
+
+  @OneToMany(() => Bid, (bid: Bid) => bid.house, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'createdBy' })
-  owner?: User;
+  bids: Bid[];
 }
