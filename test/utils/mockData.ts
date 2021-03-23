@@ -3,6 +3,8 @@ export default {
   token2: '',
   houseId1: '',
   houseId2: '',
+  bidId1: '',
+  bidId2: '',
   signup: {
     firstName: 'Brian',
     lastName: 'Gitego',

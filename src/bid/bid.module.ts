@@ -20,5 +20,6 @@ import { HouseModule } from '../house/house.module';
   ],
   controllers: [BidController],
   providers: [BidService],
+  exports: [BidService],
 })
 export class BidModule {}

@@ -13,13 +13,13 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { HouseService } from './house.service';
 import { CreateHouseDto } from './dto/create-house.dto';
-import { UpdateHouseDto } from './dto/update-house.dto';
 import { OwnerDto } from '../auth/dto/owner.dto';
 import { editFileName, imageFileFilter } from '../utils/fileUpload.utils';
 import { diskStorage } from 'multer';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { HouseRoutesDto } from './dto/house-routes.dto';
+import { User } from '../shared/decorators/user.decorator';
 
 @ApiTags('Houses')
 @Controller('houses')
@@ -53,8 +53,8 @@ export class HouseController {
     @Body() createHouseDto: CreateHouseDto,
     @Req() req: any,
     @UploadedFiles() files: Express.Multer.File,
+    @User() user: any,
   ) {
-    const user = <OwnerDto>req.user;
     return this.houseService.create(user, createHouseDto, files);
   }
 
