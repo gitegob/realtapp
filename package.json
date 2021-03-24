@@ -10,7 +10,7 @@
     "tsbuild": "tsc -p tsconfig.build.json",
     "build": "npm run migration:generate -- migrations && npm run tsbuild && npm run typeorm migration:run",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
+    "start": "npm run migrate && nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/src/main.js",
