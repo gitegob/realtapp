@@ -1,16 +1,13 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Connection, getConnection } from 'typeorm';
 import { AppModule } from '../src/app.module';
 import mockData from './utils/mockData';
-import { House } from '../src/house/entities/house.entity';
-import { User } from '../src/auth/entities/auth.entity';
 
 describe('HouseController (e2e)', () => {
   let app: INestApplication;
-  let houseRepo: Repository<House>;
-  let userRepo: Repository<User>;
+  let connection: Connection;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -19,11 +16,9 @@ describe('HouseController (e2e)', () => {
 
     app = moduleRef.createNestApplication();
     await app.init();
-    houseRepo = moduleRef.get('HouseRepository');
-    await houseRepo.query('delete from houses');
+    connection = getConnection();
+    await connection.synchronize(true);
 
-    userRepo = moduleRef.get('UserRepository');
-    await userRepo.query('delete from users');
     const res = await request(app.getHttpServer())
       .post('/auth/signup')
       .send(mockData.signup);
@@ -31,8 +26,7 @@ describe('HouseController (e2e)', () => {
   });
 
   afterAll(async () => {
-    await houseRepo.query('delete from houses');
-    await userRepo.query('delete from users');
+    await connection.synchronize(true);
     await app.close();
   });
 

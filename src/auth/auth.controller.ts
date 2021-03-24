@@ -8,6 +8,7 @@ import {
   UseGuards,
   ParseUUIDPipe,
   Param,
+  Delete,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
@@ -75,5 +76,22 @@ export class AuthController {
     bidId: string,
   ) {
     return { data: await this.authService.getUserBid(user, bidId) };
+  }
+  /** Route: Cancel a bid
+   * @param user
+   * @param bidId
+   * @returns success
+   */
+  @Delete('/bids/:bidId')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  @ApiResponse({ status: 200, description: 'Bid retrieved' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async cancelBid(
+    @User() user: JwtPayload,
+    @Param('bidId', ParseUUIDPipe)
+    bidId: string,
+  ) {
+    return { data: await this.authService.deleteUserBid(user, bidId) };
   }
 }

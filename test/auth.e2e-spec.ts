@@ -1,14 +1,13 @@
-import { User } from './../src/auth/entities/auth.entity';
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Connection, getConnection } from 'typeorm';
 import { AppModule } from '../src/app.module';
 import mockData from './utils/mockData';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
-  let userRepo: Repository<User>;
+  let connection: Connection;
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
@@ -16,11 +15,12 @@ describe('AuthController (e2e)', () => {
 
     app = moduleRef.createNestApplication();
     await app.init();
-    userRepo = moduleRef.get('UserRepository');
-    await userRepo.query('delete from users');
+    connection = getConnection();
+    await connection.synchronize(true);
+    return;
   });
   afterAll(async () => {
-    await userRepo.query('delete from users');
+    await connection.synchronize(true);
     await app.close();
   });
   it(`/POST signup`, async () => {

@@ -39,7 +39,7 @@ export class BidService {
       where: { owner: user, id: houseId },
     });
     const bids = await this.bidRepo.find({
-      where: { house },
+      where: { house, status: 'PENDING' },
       relations: ['bidder'],
     });
     return bids.map((bid) => {
@@ -58,7 +58,7 @@ export class BidService {
       where: { owner: user, id: houseId },
     });
     const bid = await this.bidRepo.findOne({
-      where: { id: bidId, house },
+      where: { id: bidId, house, status: 'PENDING' },
       relations: ['bidder'],
     });
     delete bid.bidder.password;
@@ -110,10 +110,21 @@ export class BidService {
     return bid.status;
   }
 
+  /** Find bids
+   *
+   * @param options
+   * @returns Promise<Bid[]>
+   */
   async find(options: any) {
     const bids = await this.bidRepo.find(options);
     return bids;
   }
+
+  /** Find one bid
+   *
+   * @param options
+   * @returns Promise<Bid>
+   */
   async findOne(options: any) {
     const bid = await this.bidRepo.findOne(options);
     if (!bid)
@@ -121,5 +132,16 @@ export class BidService {
         'Sorry, That bid is not available. Kindly try with another',
       );
     return bid;
+  }
+
+  /** Delete bid
+   *
+   * @param options
+   * @returns Promise<'Bid deleted'>
+   */
+  async delete(options: any) {
+    const bid = await this.findOne(options);
+    await this.bidRepo.delete(bid.id);
+    return 'Bid deleted';
   }
 }

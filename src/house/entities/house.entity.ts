@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 import { Bid } from '../../bid/entities/bid.entity';
 
-@Entity({ name: 'houses' })
+@Entity('houses')
 export class House {
   @PrimaryGeneratedColumn('uuid')
   id: string;

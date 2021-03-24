@@ -96,4 +96,16 @@ export class AuthService {
     });
     return bid;
   }
+
+  /** Service: Delete a bid
+   * @param user
+   * @param bidId
+   * @returns Promise<Bid>
+   */
+  async deleteUserBid(user: any, bidId: string) {
+    await this.bidService.delete({
+      where: { id: bidId, status: 'PENDING', bidder: user },
+    });
+    return 'Bid cancelled';
+  }
 }
