@@ -10,6 +10,14 @@ export class Bid {
   @Column({ type: 'varchar', nullable: false })
   price: number;
 
+  @Column({
+    type: 'enum',
+    enum: ['PENDING', 'APPROVED', 'REJECTED'],
+    nullable: false,
+    default: 'PENDING',
+  })
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+
   @ManyToOne(() => User, (user) => user.bids, { onDelete: 'CASCADE' })
   bidder: User;
   @ManyToOne(() => House, (house) => house.bids, { onDelete: 'CASCADE' })

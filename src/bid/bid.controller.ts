@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -73,5 +74,41 @@ export class BidController {
     bidId: string,
   ) {
     return { data: await this.bidService.getOne(user, houseId, bidId) };
+  }
+  /** Route: Approve a single bid on a house
+   * @param user
+   * @param houseId
+   * @param bidId
+   * @returns success
+   */
+  @Patch('/:bidId/approve')
+  @ApiResponse({ status: 200, description: 'Bid approved' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async approveBid(
+    @User() user: JwtPayload,
+    @Param('houseId', ParseUUIDPipe)
+    houseId: string,
+    @Param('bidId', ParseUUIDPipe)
+    bidId: string,
+  ) {
+    return { data: await this.bidService.approve(user, houseId, bidId) };
+  }
+  /** Route: Reject a single bid on a house
+   * @param user
+   * @param houseId
+   * @param bidId
+   * @returns success
+   */
+  @Patch('/:bidId/reject')
+  @ApiResponse({ status: 200, description: 'Bid rejected' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async rejectBid(
+    @User() user: JwtPayload,
+    @Param('houseId', ParseUUIDPipe)
+    houseId: string,
+    @Param('bidId', ParseUUIDPipe)
+    bidId: string,
+  ) {
+    return { data: await this.bidService.reject(user, houseId, bidId) };
   }
 }
