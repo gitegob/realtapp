@@ -6,7 +6,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
-  JoinColumn,
   OneToMany,
 } from 'typeorm';
 import { Bid } from '../../bid/entities/bid.entity';
@@ -36,6 +35,14 @@ export class House {
 
   @Column()
   price: number;
+
+  @Column({
+    type: 'enum',
+    enum: ['AVAILABLE', 'TAKEN'],
+    nullable: false,
+    default: 'AVAILABLE',
+  })
+  status: 'AVAILABLE' | 'TAKEN';
 
   @Column('text', { array: true })
   pictures: string[];

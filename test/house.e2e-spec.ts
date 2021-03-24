@@ -49,6 +49,15 @@ describe('HouseController (e2e)', () => {
     const res = await request(app.getHttpServer())
       .get('/houses?target=mine')
       .set('Authorization', 'Bearer ' + mockData.token1);
+    mockData.houseId1 = res.body.data[0]?.id;
+    return expect(res.status).toEqual(200);
+  });
+
+  it(`/patch Authenticated User should be able to update a house`, async () => {
+    const res = await request(app.getHttpServer())
+      .patch(`/houses/${mockData.houseId1}`)
+      .set('Authorization', 'Bearer ' + mockData.token1)
+      .send(mockData.house);
     return expect(res.status).toEqual(200);
   });
 });
