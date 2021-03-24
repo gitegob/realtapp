@@ -26,6 +26,10 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { HouseRoutesDto } from './dto/house-routes.dto';
 import { User } from '../shared/decorators/user.decorator';
+import { Patch } from '@nestjs/common';
+import { Param } from '@nestjs/common';
+import { ParseUUIDPipe } from '@nestjs/common';
+import { UpdateHouseDto } from './dto/update-house.dto';
 
 @ApiTags('Houses')
 @Controller('houses')
@@ -109,5 +113,65 @@ export class HouseController {
   findAll(@Req() req: any, @Query() target: HouseRoutesDto) {
     const user = <OwnerDto>req.user;
     return this.houseService.findAll(user, target);
+  }
+
+  /** Update a house info
+   * @param houseId
+   * @param body
+   * @returns success
+   */
+  @Patch('/:houseId')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        files: {
+          type: 'string',
+          format: 'binary',
+        },
+        title: {
+          type: 'string',
+          default: 'Beautiful house',
+        },
+        description: {
+          type: 'string',
+          default: "This is beautiful house, don't miss it",
+        },
+        district: {
+          type: 'string',
+          default: 'KICUKIRO',
+        },
+        street: {
+          type: 'string',
+          default: 'KN203 ave',
+        },
+        price: {
+          type: 'number',
+          default: '10000',
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'House updated successfully' })
+  @ApiResponse({ status: 400, description: 'Bad entries' })
+  @ApiResponse({ status: 401, description: 'Unauthorised' })
+  @ApiResponse({ status: 500, description: 'Internal Server Error' })
+  @UseInterceptors(
+    FilesInterceptor('files', 10, {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: editFileName,
+      }),
+      fileFilter: imageFileFilter,
+    }),
+  )
+  async update(
+    @Param('houseId', ParseUUIDPipe)
+    houseId: string,
+    @Body() updateHouseDto: UpdateHouseDto,
+    @UploadedFiles() files: Express.Multer.File,
+  ) {
+    return this.houseService.update(houseId, updateHouseDto, files);
   }
 }

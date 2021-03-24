@@ -6,6 +6,7 @@ import { House } from './entities/house.entity';
 import { HouseRoutesDto } from './dto/house-routes.dto';
 import { OwnerDto } from '../auth/dto/owner.dto';
 import cloudUpload from '../utils/cloudUpload';
+import { UpdateHouseDto } from './dto/update-house.dto';
 
 @Injectable()
 export class HouseService {
@@ -39,6 +40,11 @@ export class HouseService {
     return { message: 'House successfully posted', data: createdHouse };
   }
 
+  /**
+   * Get house one post
+   * @params options
+   * @return response
+   */
   async findOne(options: any) {
     const house = await this.houseRepo.findOne(options);
     if (!house)
@@ -55,10 +61,42 @@ export class HouseService {
    * @return response
    */
   async findAll({ id }: OwnerDto, { target }: HouseRoutesDto) {
-    const conditions = target === 'mine' ? { owner: id } : {};
+    const conditions =
+      target === 'mine' ? { owner: id } : { status: 'AVAILABLE' };
     const houses = await this.houseRepo.find({
       where: conditions,
     });
     return { message: 'List of houses found', data: houses };
+  }
+
+  /**
+   * Create a house for sale
+   * @owner owner info
+   * @params house info
+   * @files entry images of a house
+   * @return response
+   */
+  async update(id: string, updateHouseDto: UpdateHouseDto, files) {
+    const house = await this.houseRepo.findOne({
+      where: { id },
+    });
+    if (!house) {
+      throw new NotFoundException(
+        'Sorry, That House is not found. Kindly try with another.',
+      );
+    }
+    const pics = [];
+    if (files && files.length) {
+      for (const file of files) {
+        const url = await cloudUpload(file.path);
+        pics.push(url);
+      }
+    }
+    updateHouseDto.pictures = pics;
+    const updateHouse: House = this.houseRepo.create({
+      ...updateHouseDto,
+    });
+    const updatedHouse = await this.houseRepo.save(updateHouse);
+    return { message: 'House successfully updated', data: updatedHouse };
   }
 }
