@@ -82,4 +82,27 @@ describe('BidController (e2e)', () => {
     expect(res.status).toEqual(200);
     return;
   });
+  it(`/PATCH Approve a single bid on a house`, async () => {
+    const res = await request(app.getHttpServer())
+      .patch(`/houses/${mockData.houseId1}/bids/${mockData.bidId1}/approve`)
+      .set('Authorization', 'Bearer ' + mockData.token1);
+    expect(res.status).toEqual(200);
+    return;
+  });
+  it(`/POST create another bid`, async () => {
+    const res = await request(app.getHttpServer())
+      .post(`/houses/${mockData.houseId1}/bids`)
+      .set('Authorization', 'Bearer ' + mockData.token1)
+      .send(mockData.bid);
+    expect(res.status).toEqual(201);
+    mockData.bidId2 = res.body.data.id;
+    return;
+  });
+  it(`/PATCH Reject a single bid on a house`, async () => {
+    const res = await request(app.getHttpServer())
+      .patch(`/houses/${mockData.houseId1}/bids/${mockData.bidId2}/reject`)
+      .set('Authorization', 'Bearer ' + mockData.token1);
+    expect(res.status).toEqual(200);
+    return;
+  });
 });

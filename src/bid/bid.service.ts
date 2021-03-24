@@ -65,6 +65,51 @@ export class BidService {
     return bid;
   }
 
+  /** Service: Approve one bid on the house
+   * @param user
+   * @param houseId
+   * @param bidId
+   * @returns success
+   */
+  async approve(user: any, houseId: string, bidId: string) {
+    const house = await this.houseService.findOne({
+      where: { owner: user, id: houseId },
+    });
+    const bid = await this.findOne({
+      where: { id: bidId, house, status: 'PENDING' },
+      relations: ['bidder'],
+    });
+    bid.status = 'APPROVED';
+    await this.bidRepo.save(bid);
+    (
+      await this.find({
+        where: { house, status: 'PENDING' },
+      })
+    ).forEach(async (b) => {
+      if (b) b.status = 'REJECTED';
+      await this.bidRepo.save(b);
+    });
+    return bid.status;
+  }
+  /** Service: Reject one bid on the house
+   * @param user
+   * @param houseId
+   * @param bidId
+   * @returns success
+   */
+  async reject(user: any, houseId: string, bidId: string) {
+    const house = await this.houseService.findOne({
+      where: { owner: user, id: houseId },
+    });
+    const bid = await this.findOne({
+      where: { id: bidId, house, status: 'PENDING' },
+      relations: ['bidder'],
+    });
+    bid.status = 'REJECTED';
+    await this.bidRepo.save(bid);
+    return bid.status;
+  }
+
   async find(options: any) {
     const bids = await this.bidRepo.find(options);
     return bids;
@@ -73,7 +118,7 @@ export class BidService {
     const bid = await this.bidRepo.findOne(options);
     if (!bid)
       throw new NotFoundException(
-        'Sorry, That bid is not here. Kindly try with another',
+        'Sorry, That bid is not available. Kindly try with another',
       );
     return bid;
   }
