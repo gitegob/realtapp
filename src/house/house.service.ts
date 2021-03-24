@@ -5,6 +5,7 @@ import { CreateHouseDto } from './dto/create-house.dto';
 import { House } from './entities/house.entity';
 import { HouseRoutesDto } from './dto/house-routes.dto';
 import { OwnerDto } from '../auth/dto/owner.dto';
+import cloudUpload from '../utils/cloudUpload';
 
 @Injectable()
 export class HouseService {
@@ -16,14 +17,19 @@ export class HouseService {
   /**
    * Create a house for sale
    * @owner owner info
-   * @createHouseDto house info
+   * @params house info
    * @files entry images of a house
    * @return response
    */
   async create(user: any, createHouseDto: CreateHouseDto, files) {
-    createHouseDto.pictures = files
-      ? files.map(({ path: filePath }) => filePath)
-      : [];
+    const pics = [];
+    if (files && files.length) {
+      for (const file of files) {
+        const url = await cloudUpload(file.path);
+        pics.push(url);
+      }
+    }
+    createHouseDto.pictures = pics;
     const house: House = this.houseRepo.create({
       owner: user,
       ...createHouseDto,
