@@ -4,6 +4,8 @@
 .env
 /pgdata
 /pgdata_test
+src/db
+yarn.lock
 # Logs
 logs
 *.log
