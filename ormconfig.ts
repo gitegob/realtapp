@@ -1,5 +1,8 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { Bid } from './src/bid/entities/bid.entity';
 import env from './src/env';
+import { House } from './src/house/entities/house.entity';
+import { User } from './src/auth/entities/auth.entity';
 
 const ormconfig: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -8,8 +11,17 @@ const ormconfig: TypeOrmModuleOptions = {
   username: env.DB_USER,
   password: env.DB_PASSWORD,
   database: env.NODE_ENV !== 'test' ? env.DB_NAME : env.TEST_DB_NAME,
-  entities: ['./src/**/entities/*.entity.js'],
+  entities: [User, House, Bid],
   synchronize: env.NODE_ENV !== 'production',
-  autoLoadEntities: true,
+  migrations: ['dist/src/db/migrations/*.js'],
+  cli: {
+    migrationsDir: 'src/db/migrations',
+  },
+  ssl:
+    env.NODE_ENV === 'production'
+      ? {
+          rejectUnauthorized: false,
+        }
+      : false,
 };
 export default ormconfig;

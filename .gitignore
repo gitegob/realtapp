@@ -4,6 +4,7 @@
 .env
 /pgdata
 /pgdata_test
+src/db
 # Logs
 logs
 *.log
