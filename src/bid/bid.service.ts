@@ -3,9 +3,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateBidDto } from './dto/create-bid.dto';
-import { JwtPayload } from '../shared/interfaces/payload.interface';
 import { HouseService } from '../house/house.service';
-import { realpathSync } from 'node:fs';
+import {
+  sendNewBidEmail,
+  sendApprovedEmail,
+  sendRejectedEmail,
+} from '../config/email.config';
 
 @Injectable()
 export class BidService {
@@ -23,10 +26,17 @@ export class BidService {
    * @returns Promise<Bid>
    */
   async createBid(createDto: CreateBidDto, user: any, houseId: string) {
-    const house = await this.houseService.findOne(houseId);
+    const house = await this.houseService.findOne({
+      where: { id: houseId },
+      relations: ['owner'],
+    });
     let newBid = new Bid();
     newBid = { ...newBid, ...createDto, bidder: user, house };
     await this.bidRepo.save(newBid);
+    await sendNewBidEmail(house.owner.email, 'new_bid', {
+      name: house.owner.firstName,
+      date: house.createdAt.toDateString(),
+    });
     return newBid;
   }
   /** Service: Get all bids on a house
@@ -90,7 +100,11 @@ export class BidService {
       if (b) b.status = 'REJECTED';
       await this.bidRepo.save(b);
     });
-    return bid.status;
+    const result = await sendApprovedEmail(bid.bidder.email, 'approved_bid', {
+      name: bid.bidder.firstName,
+      date: bid.createdAt.toDateString(),
+    });
+    return { status: bid.status, email: result === 200 ? 'Sent' : 'Not sent' };
   }
   /** Service: Reject one bid on the house
    * @param user
@@ -108,7 +122,11 @@ export class BidService {
     });
     bid.status = 'REJECTED';
     await this.bidRepo.save(bid);
-    return bid.status;
+    const result = await sendRejectedEmail(bid.bidder.email, 'rejected_bid', {
+      name: bid.bidder.firstName,
+      date: bid.createdAt.toDateString(),
+    });
+    return { status: bid.status, email: result === 200 ? 'Sent' : 'Not sent' };
   }
 
   /** Find bids
@@ -144,5 +162,41 @@ export class BidService {
     const bid = await this.findOne(options);
     await this.bidRepo.delete(bid.id);
     return 'Bid deleted';
+  }
+
+  /** Service: Get all bids of a user
+   * @param user
+   * @returns Promise<Bid[]>
+   */
+  async getUserBids(user: any) {
+    const bids = await this.find({
+      where: { bidder: user },
+      relations: ['house'],
+    });
+    return bids;
+  }
+  /** Service: Get one bid of a user
+   * @param user
+   * @param bidId
+   * @returns Promise<Bid>
+   */
+  async getUserBid(user: any, bidId: string) {
+    const bid = await this.findOne({
+      where: { id: bidId, bidder: user },
+      relations: ['house'],
+    });
+    return bid;
+  }
+
+  /** Service: Delete a bid
+   * @param user
+   * @param bidId
+   * @returns Promise<Bid>
+   */
+  async deleteUserBid(user: any, bidId: string) {
+    await this.delete({
+      where: { id: bidId, status: 'PENDING', bidder: user },
+    });
+    return 'Bid cancelled';
   }
 }

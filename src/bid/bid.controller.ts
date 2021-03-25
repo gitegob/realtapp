@@ -2,6 +2,7 @@ import { CreateBidDto } from './dto/create-bid.dto';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
@@ -19,7 +20,7 @@ import { JwtPayload } from '../shared/interfaces/payload.interface';
 @ApiBearerAuth()
 @UseGuards(AuthGuard())
 @ApiTags('Bids')
-@Controller('/houses/:houseId/bids')
+@Controller('/bids')
 export class BidController {
   constructor(private readonly bidService: BidService) {}
 
@@ -29,7 +30,7 @@ export class BidController {
    * @param houseId
    * @returns Promise<Bid>
    */
-  @Post()
+  @Post('/house/:houseId')
   @ApiResponse({ status: 201, description: 'Bid created' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 400, description: 'Wrong entries' })
@@ -46,7 +47,7 @@ export class BidController {
    * @param houseId
    * @returns Promise<Bid[]>
    */
-  @Get()
+  @Get('/house/:houseId')
   @ApiResponse({ status: 200, description: 'All Bids retrieved' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getBids(
@@ -63,7 +64,7 @@ export class BidController {
    * @param bidId
    * @returns Promise<Bid>
    */
-  @Get('/:bidId')
+  @Get('/house/:houseId/:bidId')
   @ApiResponse({ status: 200, description: 'Bid retrieved' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getBid(
@@ -81,7 +82,7 @@ export class BidController {
    * @param bidId
    * @returns success
    */
-  @Patch('/:bidId/approve')
+  @Patch('/house/:houseId/:bidId/approve')
   @ApiResponse({ status: 200, description: 'Bid approved' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async approveBid(
@@ -99,7 +100,7 @@ export class BidController {
    * @param bidId
    * @returns success
    */
-  @Patch('/:bidId/reject')
+  @Patch('/house/:houseId/:bidId/reject')
   @ApiResponse({ status: 200, description: 'Bid rejected' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async rejectBid(
@@ -110,5 +111,48 @@ export class BidController {
     bidId: string,
   ) {
     return { data: await this.bidService.reject(user, houseId, bidId) };
+  }
+
+  /** Route: Get all bids by a user
+   * @param user
+   * @returns Promise<Bid[]>
+   */
+  @Get('/user')
+  @ApiResponse({ status: 200, description: 'All Bids retrieved' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getUserBids(@User() user: JwtPayload) {
+    return { data: await this.bidService.getUserBids(user) };
+  }
+
+  /** Route: Get a single bid by a user
+   * @param user
+   * @param bidId
+   * @returns Promise<Bid>
+   */
+  @Get('/user/bids/:bidId')
+  @ApiResponse({ status: 200, description: 'Bid retrieved' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getUserBid(
+    @User() user: JwtPayload,
+    @Param('bidId', ParseUUIDPipe)
+    bidId: string,
+  ) {
+    return { data: await this.bidService.getUserBid(user, bidId) };
+  }
+
+  /** Route: Cancel a bid
+   * @param user
+   * @param bidId
+   * @returns success
+   */
+  @Delete('/user/bids/:bidId')
+  @ApiResponse({ status: 200, description: 'Bid retrieved' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async cancelBid(
+    @User() user: JwtPayload,
+    @Param('bidId', ParseUUIDPipe)
+    bidId: string,
+  ) {
+    return { data: await this.bidService.deleteUserBid(user, bidId) };
   }
 }

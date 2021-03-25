@@ -4,18 +4,10 @@ import {
   Post,
   Body,
   HttpCode,
-  Get,
-  UseGuards,
-  ParseUUIDPipe,
-  Param,
-  Delete,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
-import { User } from '../shared/decorators/user.decorator';
-import { AuthGuard } from '@nestjs/passport';
-import { JwtPayload } from '../shared/interfaces/payload.interface';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -45,63 +37,5 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
   async login(@Body() loginDto: LoginDto) {
     return { data: await this.authService.login(loginDto) };
-  }
-
-  /** Route: Verify a user
-   *
-   * @param token
-   * @returns access_token
-   */
-  @Get('/verify/:token')
-  @ApiResponse({ status: 200, description: 'Account verified' })
-  async verify(@Param('token') token: string) {
-    return { data: await this.authService.confirmUser(token) };
-  }
-  /** Route: Get all bids by a user
-   * @param user
-   * @returns Promise<Bid[]>
-   */
-  @Get('/bids')
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard())
-  @ApiResponse({ status: 200, description: 'All Bids retrieved' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async getBids(@User() user: JwtPayload) {
-    return { data: await this.authService.getUserBids(user) };
-  }
-
-  /** Route: Get a single bid by a user
-   * @param user
-   * @param bidId
-   * @returns Promise<Bid>
-   */
-  @Get('/bids/:bidId')
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard())
-  @ApiResponse({ status: 200, description: 'Bid retrieved' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async getBid(
-    @User() user: JwtPayload,
-    @Param('bidId', ParseUUIDPipe)
-    bidId: string,
-  ) {
-    return { data: await this.authService.getUserBid(user, bidId) };
-  }
-  /** Route: Cancel a bid
-   * @param user
-   * @param bidId
-   * @returns success
-   */
-  @Delete('/bids/:bidId')
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard())
-  @ApiResponse({ status: 200, description: 'Bid retrieved' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async cancelBid(
-    @User() user: JwtPayload,
-    @Param('bidId', ParseUUIDPipe)
-    bidId: string,
-  ) {
-    return { data: await this.authService.deleteUserBid(user, bidId) };
   }
 }

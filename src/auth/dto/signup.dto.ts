@@ -33,12 +33,7 @@ export class SignupDto {
 
   @IsNotEmpty()
   @IsString()
-  @IsEmail(
-    {
-      domain_specific_validation: true,
-    },
-    { message: 'email must be a valid email' },
-  )
+  @IsEmail()
   @ApiProperty({
     description: 'The email',
     default: 'gitegob7@gmail.com',
@@ -57,7 +52,6 @@ export class SignupDto {
   password: string;
 
   @IsNotEmpty()
-  @IsString()
   @IsPhoneNumber('RW', {
     message: 'Please provide a valid phone number',
   })
