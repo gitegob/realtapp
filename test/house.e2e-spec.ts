@@ -53,11 +53,26 @@ describe('HouseController (e2e)', () => {
     return expect(res.status).toEqual(200);
   });
 
-  it(`/patch Authenticated User should be able to update a house`, async () => {
+  it(`/PATCH Authenticated User should be able to update a house`, async () => {
     const res = await request(app.getHttpServer())
       .patch(`/houses/${mockData.houseId1}`)
       .set('Authorization', 'Bearer ' + mockData.token1)
       .send(mockData.house);
+    return expect(res.status).toEqual(200);
+  });
+
+  it(`/GET/{houseId} Authenticated User should be able to get a single house`, async () => {
+    const res = await request(app.getHttpServer())
+      .get(`/houses/${mockData.houseId1}`)
+      .set('Authorization', 'Bearer ' + mockData.token1)
+      .send(mockData.house);
+    return expect(res.status).toEqual(200);
+  });
+
+  it(`/DELETE/{houseId} Authenticated User should be able to delete his available house`, async () => {
+    const res = await request(app.getHttpServer())
+      .delete(`/houses/${mockData.houseId1}`)
+      .set('Authorization', 'Bearer ' + mockData.token1);
     return expect(res.status).toEqual(200);
   });
 });
