@@ -7,7 +7,7 @@ export class CreateBidDto {
   @Max(1000000000000)
   @ApiProperty({
     description: 'Bidding price',
-    default: '15000000',
+    default: 15000000,
   })
   price: number;
 }

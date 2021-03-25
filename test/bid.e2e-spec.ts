@@ -23,9 +23,7 @@ describe('BidController (e2e)', () => {
     const res = await request(app.getHttpServer())
       .post('/auth/signup')
       .send(mockData.signup);
-    mockData.verLink = res.body.data.split(`${env.SERVER_URL}/api`)[1];
-    const res1 = await request(app.getHttpServer()).get(`${mockData.verLink}`);
-    mockData.token1 = res1.body.data.access_token;
+    mockData.token1 = res.body.data.access_token;
 
     const res2 = await request(app.getHttpServer())
       .post('/houses')
@@ -39,7 +37,7 @@ describe('BidController (e2e)', () => {
   });
   it(`/POST create bid`, async () => {
     const res = await request(app.getHttpServer())
-      .post(`/houses/${mockData.houseId1}/bids`)
+      .post(`/bids/house/${mockData.houseId1}`)
       .set('Authorization', `Bearer ${mockData.token1}`)
       .send(mockData.bid);
     expect(res.status).toEqual(201);
@@ -48,42 +46,42 @@ describe('BidController (e2e)', () => {
   });
   it(`/GET Get all bids on a house`, async () => {
     const res = await request(app.getHttpServer())
-      .get(`/houses/${mockData.houseId1}/bids`)
+      .get(`/bids/house/${mockData.houseId1}`)
       .set('Authorization', `Bearer ${mockData.token1}`);
     expect(res.status).toEqual(200);
     return;
   });
   it(`/GET Get a single bid on a house`, async () => {
     const res = await request(app.getHttpServer())
-      .get(`/houses/${mockData.houseId1}/bids/${mockData.bidId1}`)
+      .get(`/bids/house/${mockData.houseId1}/${mockData.bidId1}`)
       .set('Authorization', `Bearer ${mockData.token1}`);
     expect(res.status).toEqual(200);
     return;
   });
   it(`/GET Get all bids by a user`, async () => {
     const res = await request(app.getHttpServer())
-      .get('/auth/bids')
+      .get('/bids/user')
       .set('Authorization', `Bearer ${mockData.token1}`);
     expect(res.status).toEqual(200);
     return;
   });
   it(`/GET Get a single bid by a user`, async () => {
     const res = await request(app.getHttpServer())
-      .get(`/auth/bids/${mockData.bidId1}`)
+      .get(`/bids/user/bids/${mockData.bidId1}`)
       .set('Authorization', `Bearer ${mockData.token1}`);
     expect(res.status).toEqual(200);
     return;
   });
   it(`/PATCH Approve a single bid on a house`, async () => {
     const res = await request(app.getHttpServer())
-      .patch(`/houses/${mockData.houseId1}/bids/${mockData.bidId1}/approve`)
+      .patch(`/bids/house/${mockData.houseId1}/${mockData.bidId1}/approve`)
       .set('Authorization', `Bearer ${mockData.token1}`);
     expect(res.status).toEqual(200);
     return;
   });
   it(`/POST create another bid`, async () => {
     const res = await request(app.getHttpServer())
-      .post(`/houses/${mockData.houseId1}/bids`)
+      .post(`/bids/house/${mockData.houseId1}`)
       .set('Authorization', `Bearer ${mockData.token1}`)
       .send(mockData.bid);
     expect(res.status).toEqual(201);
@@ -92,14 +90,14 @@ describe('BidController (e2e)', () => {
   });
   it(`/PATCH Reject a single bid on a house`, async () => {
     const res = await request(app.getHttpServer())
-      .patch(`/houses/${mockData.houseId1}/bids/${mockData.bidId2}/reject`)
+      .patch(`/bids/house/${mockData.houseId1}/${mockData.bidId2}/reject`)
       .set('Authorization', `Bearer ${mockData.token1}`);
     expect(res.status).toEqual(200);
     return;
   });
   it(`/POST create another bid`, async () => {
     const res = await request(app.getHttpServer())
-      .post(`/houses/${mockData.houseId1}/bids`)
+      .post(`/bids/house/${mockData.houseId1}`)
       .set('Authorization', `Bearer ${mockData.token1}`)
       .send(mockData.bid);
     expect(res.status).toEqual(201);
@@ -108,7 +106,7 @@ describe('BidController (e2e)', () => {
   });
   it(`/DELETE user should cancel a bid`, async () => {
     const res = await request(app.getHttpServer())
-      .delete(`/auth/bids/${mockData.bidId2}`)
+      .delete(`/bids/user/bids/${mockData.bidId2}`)
       .set('Authorization', `Bearer ${mockData.token1}`);
     expect(res.status).toEqual(200);
     return;

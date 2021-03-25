@@ -29,13 +29,6 @@ describe('AuthController (e2e)', () => {
       .post('/auth/signup')
       .send(mockData.signup);
     expect(res.status).toEqual(201);
-    mockData.verLink = res.body.data.split(`${env.SERVER_URL}/api`)[1];
-    return;
-  });
-
-  it(`/GET should confirm a user`, async () => {
-    const res = await request(app.getHttpServer()).get(`${mockData.verLink}`);
-    expect(res.status).toEqual(200);
     return;
   });
   it(`/POST login`, async () => {

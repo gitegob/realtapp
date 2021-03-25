@@ -23,9 +23,7 @@ describe('HouseController (e2e)', () => {
     const res = await request(app.getHttpServer())
       .post('/auth/signup')
       .send(mockData.signup);
-    mockData.verLink = res.body.data.split(`${env.SERVER_URL}/api`)[1];
-    const res1 = await request(app.getHttpServer()).get(`${mockData.verLink}`);
-    mockData.token1 = res1.body.data.access_token;
+    mockData.token1 = res.body.data.access_token;
   });
 
   afterAll(async () => {

@@ -1,5 +1,11 @@
 import { User } from './../../auth/entities/auth.entity';
-import { PrimaryGeneratedColumn, Column, Entity, ManyToOne } from 'typeorm';
+import {
+  PrimaryGeneratedColumn,
+  Column,
+  Entity,
+  ManyToOne,
+  CreateDateColumn,
+} from 'typeorm';
 import { House } from '../../house/entities/house.entity';
 
 @Entity('bids')
@@ -7,7 +13,7 @@ export class Bid {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar', nullable: false })
+  @Column({ nullable: false })
   price: number;
 
   @Column({
@@ -17,6 +23,9 @@ export class Bid {
     default: 'PENDING',
   })
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
+
+  @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
 
   @ManyToOne(() => User, (user) => user.bids, { onDelete: 'CASCADE' })
   bidder: User;
