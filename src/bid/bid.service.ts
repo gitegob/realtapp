@@ -81,6 +81,7 @@ export class BidService {
     });
     bid.status = 'APPROVED';
     await this.bidRepo.save(bid);
+    await this.houseService.updateTakenHouse(houseId);
     (
       await this.find({
         where: { house, status: 'PENDING' },

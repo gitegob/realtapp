@@ -8,6 +8,7 @@ import {
   UseInterceptors,
   UseGuards,
   Query,
+  Delete,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
@@ -170,8 +171,47 @@ export class HouseController {
     @Param('houseId', ParseUUIDPipe)
     houseId: string,
     @Body() updateHouseDto: UpdateHouseDto,
+    @Req() req: any,
     @UploadedFiles() files: Express.Multer.File,
   ) {
-    return this.houseService.update(houseId, updateHouseDto, files);
+    return this.houseService.update(houseId, updateHouseDto, req, files);
+  }
+
+  /**
+   * Get all house posts
+   * @req entry data
+   * @return response
+   */
+  @ApiResponse({ status: 200, description: 'House found successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorised' })
+  @ApiResponse({ status: 404, description: 'House Not found' })
+  @ApiResponse({ status: 500, description: 'Internal Server Error' })
+  @Get('/:houseId')
+  findOne(
+    @Param('houseId', ParseUUIDPipe)
+    houseId: string,
+  ) {
+    return this.houseService.findOne({
+      where: { id: houseId },
+      relations: ['owner'],
+    });
+  }
+
+  /**
+   * Delete a house
+   * @param houseId
+   * @return response
+   */
+  @ApiResponse({ status: 200, description: 'House found successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorised' })
+  @ApiResponse({ status: 404, description: 'House Not found' })
+  @ApiResponse({ status: 500, description: 'Internal Server Error' })
+  @Delete('/:houseId')
+  delete(
+    @Param('houseId', ParseUUIDPipe)
+    houseId: string,
+    @Req() req: any,
+  ) {
+    return this.houseService.delete(houseId, req);
   }
 }

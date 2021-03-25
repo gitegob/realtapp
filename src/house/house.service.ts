@@ -51,6 +51,7 @@ export class HouseService {
       throw new NotFoundException(
         'Sorry, That House is not found. Kindly try with another.',
       );
+    delete house?.owner?.password;
     return house;
   }
 
@@ -62,7 +63,9 @@ export class HouseService {
    */
   async findAll({ id }: OwnerDto, { target }: HouseRoutesDto) {
     const conditions =
-      target === 'mine' ? { owner: id } : { status: 'AVAILABLE' };
+      target === 'mine'
+        ? { owner: id, status: 'AVAILABLE' }
+        : { status: 'AVAILABLE' };
     const houses = await this.houseRepo.find({
       where: conditions,
     });
@@ -76,9 +79,9 @@ export class HouseService {
    * @files entry images of a house
    * @return response
    */
-  async update(id: string, updateHouseDto: UpdateHouseDto, files) {
+  async update(id: string, updateHouseDto: UpdateHouseDto, req: any, files) {
     const house = await this.houseRepo.findOne({
-      where: { id },
+      where: { id, status: 'AVAILABLE', owner: req.user },
     });
     if (!house) {
       throw new NotFoundException(
@@ -93,10 +96,32 @@ export class HouseService {
       }
     }
     updateHouseDto.pictures = pics;
-    const updateHouse: House = this.houseRepo.create({
-      ...updateHouseDto,
+    await this.houseRepo.update({ id }, updateHouseDto);
+    return { message: 'House successfully updated', data: updateHouseDto };
+  }
+
+  /**
+   * update a taken house
+   * @params house id
+   * @return response
+   */
+  async updateTakenHouse(houseId: string) {
+    return await this.houseRepo.update({ id: houseId }, { status: 'TAKEN' });
+  }
+
+  /** Delete bid
+   *
+   * @param houseId
+   * @param req
+   * @returns response
+   */
+  async delete(houseId: string, req: any) {
+    const house = await this.findOne({
+      id: houseId,
+      status: 'AVAILABLE',
+      owner: req.user,
     });
-    const updatedHouse = await this.houseRepo.save(updateHouse);
-    return { message: 'House successfully updated', data: updatedHouse };
+    await this.houseRepo.delete({ id: house.id });
+    return { message: 'House successfully deleted' };
   }
 }
