@@ -22,6 +22,9 @@ export class User {
   @Column({ type: 'varchar', nullable: false })
   phone: string;
 
+  @Column({ default: false })
+  verified: boolean;
+
   @OneToMany(() => House, (house) => house.owner, { onDelete: 'CASCADE' })
   houses: House[];
   @OneToMany(() => Bid, (bid) => bid.bidder, { onDelete: 'CASCADE' })

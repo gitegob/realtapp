@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
 import { urlencoded, json } from 'express';
 import { AppModule } from './app.module';
+import { sendEmail } from './config/email.config';
 import { config, customOptions } from './config/swagger.config';
 import env from './env';
 
@@ -41,7 +42,7 @@ async function bootstrap() {
    * @param port
    * @param callback
    */
-  await app.listen(env.PORT, () =>
+  await app.listen(env.PORT, async () =>
     console.log(`Server running on ${env.PORT}`),
   );
 }

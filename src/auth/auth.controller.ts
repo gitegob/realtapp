@@ -28,7 +28,7 @@ export class AuthController {
    * @returns access_token
    */
   @Post('/signup')
-  @ApiResponse({ status: 201, description: 'Sign up successful' })
+  @ApiResponse({ status: 201, description: 'Verification sent' })
   @ApiResponse({ status: 400, description: 'Bad entries' })
   async signup(@Body() signupDto: SignupDto) {
     return { data: await this.authService.create(signupDto) };
@@ -47,6 +47,16 @@ export class AuthController {
     return { data: await this.authService.login(loginDto) };
   }
 
+  /** Route: Verify a user
+   *
+   * @param token
+   * @returns access_token
+   */
+  @Get('/verify/:token')
+  @ApiResponse({ status: 200, description: 'Account verified' })
+  async verify(@Param('token') token: string) {
+    return { data: await this.authService.confirmUser(token) };
+  }
   /** Route: Get all bids by a user
    * @param user
    * @returns Promise<Bid[]>

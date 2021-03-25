@@ -15,6 +15,10 @@ const {
   CLOUD_API_KEY,
   CLOUD_API_SECRET,
   CLOUD_NAME,
+  SGRID_KEY,
+  SGRID_KEY_TEST,
+  SENDER_EMAIL,
+  SERVER_URL,
 } = process.env;
 
 export default {
@@ -30,4 +34,8 @@ export default {
   CLOUD_API_SECRET,
   CLOUD_API_KEY,
   CLOUD_NAME,
+  SGRID_KEY,
+  SGRID_KEY_TEST,
+  SENDER_EMAIL,
+  SERVER_URL,
 };

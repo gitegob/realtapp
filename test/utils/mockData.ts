@@ -5,6 +5,7 @@ export default {
   houseId2: '',
   bidId1: '',
   bidId2: '',
+  verLink: '',
   signup: {
     firstName: 'Brian',
     lastName: 'Gitego',
