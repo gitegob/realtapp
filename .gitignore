@@ -6,6 +6,8 @@
 /pgdata_test
 src/db
 yarn.lock
+/uploads
+
 # Logs
 logs
 *.log

@@ -8,7 +8,8 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "tsbuild": "tsc -p tsconfig.build.json",
-    "build": "npm run migration:generate -- migrations && npm run tsbuild && npm run typeorm migration:run",
+    "build:full": "npm run prebuild && npm run tsbuild",
+    "build": "npm run migration:generate -- migrations && npm run build:full && npm run typeorm migration:run",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -35,6 +36,7 @@
     "@nestjs/platform-express": "^7.6.15",
     "@nestjs/swagger": "^4.8.0",
     "@nestjs/typeorm": "^7.1.5",
+    "@sendgrid/mail": "^7.4.2",
     "bcrypt": "^5.0.1",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",

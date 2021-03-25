@@ -1,14 +1,10 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import {
-  Connection,
-  createConnection,
-  getConnection,
-  Repository,
-} from 'typeorm';
+import { Connection, getConnection } from 'typeorm';
 import { AppModule } from '../src/app.module';
 import mockData from './utils/mockData';
+import env from '../src/env';
 
 describe('BidController (e2e)', () => {
   let app: INestApplication;
@@ -24,10 +20,13 @@ describe('BidController (e2e)', () => {
     connection = getConnection();
     await connection.synchronize(true);
 
-    const res1 = await request(app.getHttpServer())
+    const res = await request(app.getHttpServer())
       .post('/auth/signup')
       .send(mockData.signup);
+    mockData.verLink = res.body.data.split(`${env.SERVER_URL}/api`)[1];
+    const res1 = await request(app.getHttpServer()).get(`${mockData.verLink}`);
     mockData.token1 = res1.body.data.access_token;
+
     const res2 = await request(app.getHttpServer())
       .post('/houses')
       .set('Authorization', `Bearer ${mockData.token1}`)

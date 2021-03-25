@@ -4,6 +4,7 @@ import { INestApplication } from '@nestjs/common';
 import { Connection, getConnection } from 'typeorm';
 import { AppModule } from '../src/app.module';
 import mockData from './utils/mockData';
+import env from '../src/env';
 
 describe('HouseController (e2e)', () => {
   let app: INestApplication;
@@ -22,7 +23,9 @@ describe('HouseController (e2e)', () => {
     const res = await request(app.getHttpServer())
       .post('/auth/signup')
       .send(mockData.signup);
-    mockData.token1 = res.body.data?.access_token;
+    mockData.verLink = res.body.data.split(`${env.SERVER_URL}/api`)[1];
+    const res1 = await request(app.getHttpServer()).get(`${mockData.verLink}`);
+    mockData.token1 = res1.body.data.access_token;
   });
 
   afterAll(async () => {

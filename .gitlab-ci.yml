@@ -30,7 +30,7 @@ run_e2e_tests:
 
 build_app:
   stage: build
-  script: yarn run tsbuild
+  script: yarn run build:full
 
 build_docker_image:
   image: docker:stable
