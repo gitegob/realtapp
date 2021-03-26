@@ -52,12 +52,10 @@ export class SignupDto {
   password: string;
 
   @IsNotEmpty()
-  @IsPhoneNumber('RW', {
-    message: 'Please provide a valid phone number',
-  })
+  @IsPhoneNumber('RW')
   @ApiProperty({
     description: 'Phone number',
-    default: '788555777',
+    default: '0788555777',
   })
   phone: string;
 }

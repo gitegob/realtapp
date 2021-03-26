@@ -11,7 +11,7 @@ export default {
     lastName: 'Gitego',
     email: 'test@test.com',
     password: 'Password',
-    phone: '788555555',
+    phone: '0788555555',
   },
   login: {
     email: 'test@test.com',

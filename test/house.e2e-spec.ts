@@ -3,8 +3,7 @@ import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { Connection, getConnection } from 'typeorm';
 import { AppModule } from '../src/app.module';
-import mockData from './utils/mockData';
-import env from '../src/env';
+import mockData from './mockdata';
 
 describe('HouseController (e2e)', () => {
   let app: INestApplication;

@@ -1,10 +1,5 @@
 import { LoginDto } from './dto/login.dto';
-import {
-  Controller,
-  Post,
-  Body,
-  HttpCode,
-} from '@nestjs/common';
+import { Controller, Post, Body, HttpCode } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
@@ -20,7 +15,7 @@ export class AuthController {
    * @returns access_token
    */
   @Post('/signup')
-  @ApiResponse({ status: 201, description: 'Verification sent' })
+  @ApiResponse({ status: 201, description: 'Sign up successful' })
   @ApiResponse({ status: 400, description: 'Bad entries' })
   async signup(@Body() signupDto: SignupDto) {
     return { data: await this.authService.create(signupDto) };
