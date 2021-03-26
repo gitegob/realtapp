@@ -49,7 +49,10 @@ export class BidService {
       where: { owner: user, id: houseId },
     });
     const bids = await this.bidRepo.find({
-      where: { house, status: 'PENDING' },
+      where: [
+        { house, status: 'PENDING' },
+        { house, status: 'APPROVED' },
+      ],
       relations: ['bidder'],
     });
     return bids.map((bid) => {
@@ -68,7 +71,10 @@ export class BidService {
       where: { owner: user, id: houseId },
     });
     const bid = await this.bidRepo.findOne({
-      where: { id: bidId, house, status: 'PENDING' },
+      where: [
+        { house, status: 'PENDING' },
+        { house, status: 'APPROVED' },
+      ],
       relations: ['bidder'],
     });
     delete bid.bidder.password;
@@ -86,7 +92,7 @@ export class BidService {
       where: { owner: user, id: houseId },
     });
     const bid = await this.findOne({
-      where: { id: bidId, house, status: 'PENDING' },
+      where: [{ id: bidId, house, status: 'PENDING' }],
       relations: ['bidder'],
     });
     bid.status = 'APPROVED';
