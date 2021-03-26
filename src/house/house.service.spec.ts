@@ -3,7 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { HouseRepositoryFake } from '../../test/utils/HouseRepositoryFake';
-import mockData from '../../test/utils/mockData';
 import { House } from './entities/house.entity';
 import { HouseService } from './house.service';
 
@@ -17,7 +16,7 @@ describe('HouseService', () => {
         HouseService,
         {
           provide: getRepositoryToken(House),
-          useClass: HouseRepositoryFake,
+          useValue: HouseRepositoryFake,
         },
       ],
     }).compile();

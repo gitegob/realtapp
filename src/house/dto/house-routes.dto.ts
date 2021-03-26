@@ -12,3 +12,4 @@ export class HouseRoutesDto {
   })
   readonly target: string;
 }
+export type Target = 'all' | 'mine';
