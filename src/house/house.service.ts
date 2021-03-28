@@ -74,8 +74,9 @@ export class HouseService {
 
   /**
    * Create a house for sale
-   * @owner owner info
-   * @params house info
+   * @id house id
+   * @params updated data
+   * @params req with user info
    * @files entry images of a house
    * @return response
    */

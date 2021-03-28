@@ -11,7 +11,6 @@ import {
   Delete,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { Express } from 'express';
 import { HouseService } from './house.service';
 import { CreateHouseDto } from './dto/create-house.dto';
 import { OwnerDto } from '../auth/dto/owner.dto';
@@ -41,9 +40,9 @@ export class HouseController {
 
   /**
    * Create a house for sale
-   * @req request data
    * @body entry data
    * @files entry images of a house
+   * @params user info
    * @return response
    */
   @ApiConsumes('multipart/form-data')
@@ -94,8 +93,7 @@ export class HouseController {
   )
   create(
     @Body() createHouseDto: CreateHouseDto,
-    @Req() req: any,
-    @UploadedFiles() files: Express.Multer.File,
+    @UploadedFiles() files: any,
     @User() user: any,
   ) {
     return this.houseService.create(user, createHouseDto, files);
@@ -118,7 +116,9 @@ export class HouseController {
 
   /** Update a house info
    * @param houseId
-   * @param body
+   * @params body
+   * @param files images
+   * @param req request with user info
    * @returns success
    */
   @Patch('/:houseId')
@@ -172,14 +172,14 @@ export class HouseController {
     houseId: string,
     @Body() updateHouseDto: UpdateHouseDto,
     @Req() req: any,
-    @UploadedFiles() files: Express.Multer.File,
+    @UploadedFiles() files: any,
   ) {
     return this.houseService.update(houseId, updateHouseDto, req, files);
   }
 
   /**
    * Get all house posts
-   * @req entry data
+   * @param houseId data
    * @return response
    */
   @ApiResponse({ status: 200, description: 'House found successfully' })

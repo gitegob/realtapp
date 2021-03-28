@@ -23,6 +23,7 @@ export default {
     district: 'KICUKIRO',
     street: 'KK 440',
     price: 20000,
+    pictures: [],
   },
   bid: {
     price: 300000,
