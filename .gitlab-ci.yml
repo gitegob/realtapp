@@ -16,7 +16,7 @@ install_deps:
     paths:
       - node_modules/
 
-run_e2e_tests:
+run_tests:
   stage: test
   services:
     - postgres:alpine
@@ -26,7 +26,9 @@ run_e2e_tests:
     POSTGRES_PASSWORD: $DB_PASSWORD
     POSTGRES_HOST_AUTH_METHOD: trust
 
-  script: yarn run test:e2e
+  script:
+    - yarn run test:e2e
+    - yarn run test
 
 build_app:
   stage: build

@@ -8,7 +8,6 @@ import { PassportModule } from '@nestjs/passport';
 import env from '../env';
 import { User } from './entities/auth.entity';
 import { BidModule } from '../bid/bid.module';
-
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),

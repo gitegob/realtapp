@@ -11,8 +11,6 @@ import { SignupDto } from './dto/signup.dto';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { BidService } from '../bid/bid.service';
-import env from '../env';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +18,6 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
     private readonly jwtService: JwtService,
-    private readonly bidService: BidService,
   ) {}
 
   /** Service: Create a user
