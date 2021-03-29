@@ -22,13 +22,18 @@ export class HouseService {
    * @files entry images of a house
    * @return response
    */
-  async create(user: any, createHouseDto: CreateHouseDto, files) {
-    const pics = [];
+  async create(user: any, createHouseDto: CreateHouseDto, files: any) {
+    let pics = [];
     if (files && files.length) {
       for (const file of files) {
         const url = await cloudUpload(file.path);
         pics.push(url);
       }
+    } else {
+      pics = [
+        'http://res.cloudinary.com/broadcaster/image/upload/v1616756495/erqurnrnmngsys0mlfzq.jpg',
+        'http://res.cloudinary.com/broadcaster/image/upload/v1616705168/h3qx1ngnlx0z5hvowxow.jpg',
+      ];
     }
     createHouseDto.pictures = pics;
     const house: House = this.houseRepo.create({
@@ -89,12 +94,17 @@ export class HouseService {
         'Sorry, That House is not found. Kindly try with another.',
       );
     }
-    const pics = [];
+    let pics = [];
     if (files && files.length) {
       for (const file of files) {
         const url = await cloudUpload(file.path);
         pics.push(url);
       }
+    } else {
+      pics = [
+        'http://res.cloudinary.com/broadcaster/image/upload/v1616756495/erqurnrnmngsys0mlfzq.jpg',
+        'http://res.cloudinary.com/broadcaster/image/upload/v1616704958/m6whwgczznrmjd9ieceu.jpg',
+      ];
     }
     updateHouseDto.pictures = pics;
     await this.houseRepo.update({ id }, updateHouseDto);
