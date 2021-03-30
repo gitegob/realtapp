@@ -64,7 +64,7 @@ describe('HouseController (e2e)', () => {
   it(`/GET/{houseId} Authenticated User should be able to get a single house`, async () => {
     const res = await request(app.getHttpServer())
       .get(`/houses/${mockData.houseId1}`)
-      .set('Authorization', 'Bearer ' + mockData.token2)
+      .set('Authorization', 'Bearer ' + mockData.token2);
     return expect(res.status).toEqual(200);
   });
 

@@ -17,7 +17,6 @@ import { OwnerDto } from '../auth/dto/owner.dto';
 import { diskStorage } from 'multer';
 import {
   ApiBearerAuth,
-  ApiBody,
   ApiConsumes,
   ApiResponse,
   ApiTags,

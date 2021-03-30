@@ -69,8 +69,8 @@ export class BidService {
     });
     const bid = await this.bidRepo.findOne({
       where: [
-        { house, status: 'PENDING' },
-        { house, status: 'APPROVED' },
+        { id: bidId, house, status: 'PENDING' },
+        { id: bidId, house, status: 'APPROVED' },
       ],
       relations: ['bidder'],
     });
