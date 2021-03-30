@@ -1,6 +1,11 @@
-import { DocumentBuilder, SwaggerCustomOptions } from '@nestjs/swagger';
+import { INestApplication } from '@nestjs/common';
+import {
+  DocumentBuilder,
+  SwaggerCustomOptions,
+  SwaggerModule,
+} from '@nestjs/swagger';
 
-export const config = new DocumentBuilder()
+const config = new DocumentBuilder()
   .addBearerAuth({ type: 'http', scheme: 'bearer' })
   .setTitle('RealtApp')
   .setDescription('The RealtApp documentation')
@@ -11,9 +16,14 @@ export const config = new DocumentBuilder()
   .addTag('Bids', 'Bid Endpoints')
   .build();
 
-export const customOptions: SwaggerCustomOptions = {
+const customOptions: SwaggerCustomOptions = {
   swaggerOptions: {
     persistAuthorization: true,
   },
   customSiteTitle: 'RealtApp API',
 };
+
+export function setupDocs(app: INestApplication): void {
+  const document = SwaggerModule.createDocument(app, config);
+  return SwaggerModule.setup('api', app, document, customOptions);
+}

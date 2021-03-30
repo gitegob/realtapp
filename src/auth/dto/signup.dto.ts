@@ -8,7 +8,7 @@ import {
   MaxLength,
 } from 'class-validator';
 
-export class SignupDto {
+export class SignUpDto {
   @IsNotEmpty()
   @IsString()
   @MaxLength(50, {

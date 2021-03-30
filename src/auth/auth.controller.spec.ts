@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import mockdata from '../../test/mockdata';
+import mockdata from '../../test/mockData';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
@@ -31,7 +31,7 @@ describe('Auth Controller', () => {
   });
 
   it('User should be able to signup', async () => {
-    authController.signup(mockdata.signup);
+    authController.signUp(mockdata.signup);
     expect(spyService.create).toHaveBeenCalledWith(mockdata.signup);
   });
 

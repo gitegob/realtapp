@@ -1,17 +1,24 @@
 import { Module } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { MulterModule } from '@nestjs/platform-express';
+import { RateLimiterInterceptor, RateLimiterModule } from 'nestjs-rate-limiter';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { BidModule } from './bid/bid.module';
-import ormconfig from '../ormconfig';
 import { HouseModule } from './house/house.module';
-import { MulterModule } from '@nestjs/platform-express';
-import { RateLimiterInterceptor, RateLimiterModule } from 'nestjs-rate-limiter';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import config from './app.config';
+import { TypeOrmConfigService } from './shared/config/typeorm.config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [config],
+      cache: true,
+    }),
     RateLimiterModule.register({
       points: 12,
       duration: 60,
@@ -22,7 +29,9 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
       dest: './upload',
     }),
     AuthModule,
-    TypeOrmModule.forRoot(ormconfig),
+    TypeOrmModule.forRootAsync({
+      useClass: TypeOrmConfigService,
+    }),
     HouseModule,
     BidModule,
   ],
@@ -34,5 +43,6 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
       useClass: RateLimiterInterceptor,
     },
   ],
+  exports: [HouseModule],
 })
 export class AppModule {}

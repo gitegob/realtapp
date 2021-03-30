@@ -1,4 +1,4 @@
-import { LoginDto } from './dto/login.dto';
+import { LogInDto } from './dto/login.dto';
 import { JwtPayload } from './../shared/interfaces/payload.interface';
 import { User } from './entities/auth.entity';
 import {
@@ -7,7 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { SignupDto } from './dto/signup.dto';
+import { SignUpDto } from './dto/signup.dto';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -25,7 +25,7 @@ export class AuthService {
    * @param signupDto
    * @returns access_token
    */
-  async create(signupDto: SignupDto) {
+  async create(signupDto: SignUpDto) {
     const user = await this.findOne({
       where: { email: signupDto.email },
     });
@@ -53,7 +53,7 @@ export class AuthService {
    * @param loginDto
    * @returns access_token
    */
-  async login({ email, password }: LoginDto) {
+  async login({ email, password }: LogInDto) {
     const user = await this.findOne({ where: { email } });
     if (!user) throw new UnauthorizedException('Invalid credentials');
     const match = await bcrypt.compare(password, user.password);

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import mockdata from '../../test/mockdata';
+import mockdata from '../../test/mockData';
 import { BidController } from './bid.controller';
 import { BidService } from './bid.service';
 

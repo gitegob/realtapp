@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import mockdata from '../../test/mockdata';
+import mockdata from '../../test/mockData';
 import { HouseController } from './house.controller';
 import { HouseService } from './house.service';
 

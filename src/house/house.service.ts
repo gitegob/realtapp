@@ -5,14 +5,15 @@ import { CreateHouseDto } from './dto/create-house.dto';
 import { House } from './entities/house.entity';
 import { HouseRoutesDto } from './dto/house-routes.dto';
 import { OwnerDto } from '../auth/dto/owner.dto';
-import cloudUpload from '../utils/cloudUpload';
 import { UpdateHouseDto } from './dto/update-house.dto';
+import CloudinaryService from '../shared/providers/cloudinary.service';
 
 @Injectable()
 export class HouseService {
   constructor(
     @InjectRepository(House)
     private houseRepo: Repository<House>, // private userService: AuthService,
+    private cloudService: CloudinaryService,
   ) {}
 
   /**
@@ -26,7 +27,7 @@ export class HouseService {
     let pics = [];
     if (files && files.length) {
       for (const file of files) {
-        const url = await cloudUpload(file.path);
+        const url = await this.cloudService.cloudUpload(file.path);
         pics.push(url);
       }
     } else {
@@ -97,7 +98,7 @@ export class HouseService {
     let pics = [];
     if (files && files.length) {
       for (const file of files) {
-        const url = await cloudUpload(file.path);
+        const url = await this.cloudService.cloudUpload(file.path);
         pics.push(url);
       }
     } else {
