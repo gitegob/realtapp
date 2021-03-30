@@ -6,7 +6,6 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import env from '../env';
 import { User } from './entities/auth.entity';
 import { BidModule } from '../bid/bid.module';
 @Module({
