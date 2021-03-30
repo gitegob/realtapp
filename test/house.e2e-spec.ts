@@ -22,7 +22,7 @@ describe('HouseController (e2e)', () => {
     const res = await request(app.getHttpServer())
       .post('/auth/signup')
       .send(mockData.signup);
-    mockData.token1 = res.body.data.access_token;
+    mockData.token2 = res.body.data.access_token;
   });
 
   afterAll(async () => {
@@ -33,7 +33,7 @@ describe('HouseController (e2e)', () => {
   it(`/POST Authenticated User should be able to post a house`, async () => {
     const res = await request(app.getHttpServer())
       .post('/houses/')
-      .set('Authorization', 'Bearer ' + mockData.token1)
+      .set('Authorization', 'Bearer ' + mockData.token2)
       .send(mockData.house);
     return expect(res.status).toEqual(201);
   });
@@ -41,14 +41,14 @@ describe('HouseController (e2e)', () => {
   it(`/GET Authenticated User should be able to view all available houses`, async () => {
     const res = await request(app.getHttpServer())
       .get('/houses?target=all')
-      .set('Authorization', 'Bearer ' + mockData.token1);
+      .set('Authorization', 'Bearer ' + mockData.token2);
     return expect(res.status).toEqual(200);
   });
 
   it(`/GET Authenticated User should be able to view HIS/HER houses`, async () => {
     const res = await request(app.getHttpServer())
       .get('/houses?target=mine')
-      .set('Authorization', 'Bearer ' + mockData.token1);
+      .set('Authorization', 'Bearer ' + mockData.token2);
     mockData.houseId1 = res.body.data[0]?.id;
     return expect(res.status).toEqual(200);
   });
@@ -56,7 +56,7 @@ describe('HouseController (e2e)', () => {
   it(`/PATCH Authenticated User should be able to update a house`, async () => {
     const res = await request(app.getHttpServer())
       .patch(`/houses/${mockData.houseId1}`)
-      .set('Authorization', 'Bearer ' + mockData.token1)
+      .set('Authorization', 'Bearer ' + mockData.token2)
       .send(mockData.house);
     return expect(res.status).toEqual(200);
   });
@@ -64,15 +64,14 @@ describe('HouseController (e2e)', () => {
   it(`/GET/{houseId} Authenticated User should be able to get a single house`, async () => {
     const res = await request(app.getHttpServer())
       .get(`/houses/${mockData.houseId1}`)
-      .set('Authorization', 'Bearer ' + mockData.token1)
-      .send(mockData.house);
+      .set('Authorization', 'Bearer ' + mockData.token2)
     return expect(res.status).toEqual(200);
   });
 
   it(`/DELETE/{houseId} Authenticated User should be able to delete his available house`, async () => {
     const res = await request(app.getHttpServer())
       .delete(`/houses/${mockData.houseId1}`)
-      .set('Authorization', 'Bearer ' + mockData.token1);
+      .set('Authorization', 'Bearer ' + mockData.token2);
     return expect(res.status).toEqual(200);
   });
 });

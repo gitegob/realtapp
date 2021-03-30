@@ -7,9 +7,17 @@ import { BidModule } from './bid/bid.module';
 import ormconfig from '../ormconfig';
 import { HouseModule } from './house/house.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { RateLimiterInterceptor, RateLimiterModule } from 'nestjs-rate-limiter';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
+    RateLimiterModule.register({
+      points: 12,
+      duration: 60,
+      blockDuration: 60,
+      errorMessage: 'Too many requests',
+    }),
     MulterModule.register({
       dest: './upload',
     }),
@@ -19,6 +27,12 @@ import { MulterModule } from '@nestjs/platform-express';
     BidModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RateLimiterInterceptor,
+    },
+  ],
 })
 export class AppModule {}
