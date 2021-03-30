@@ -5,6 +5,7 @@ import { Module } from '@nestjs/common';
 import { BidService } from './bid.service';
 import { BidController } from './bid.controller';
 import { HouseModule } from '../house/house.module';
+import { EmailService } from '../shared/providers/email.service';
 
 @Module({
   imports: [
@@ -17,7 +18,13 @@ import { HouseModule } from '../house/house.module';
     HouseModule,
   ],
   controllers: [BidController],
-  providers: [BidService],
+  providers: [
+    BidService,
+    {
+      provide: EmailService,
+      useClass: EmailService,
+    },
+  ],
   exports: [BidService],
 })
 export class BidModule {}

@@ -1,10 +1,9 @@
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { SwaggerModule } from '@nestjs/swagger';
 import { urlencoded, json } from 'express';
 import { AppModule } from './app.module';
-import { config, customOptions } from './config/swagger.config';
-import env from './env';
+import { setupDocs } from './shared/config/swagger.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -25,24 +24,24 @@ async function bootstrap() {
   /**
    * Set up bodyParser and data limit
    */
-  app.use(json({ limit: '50mb' }));
+  app.use(json({ limit: '10mb' }));
   app.use(
-    urlencoded({ limit: '50mb', extended: true, parameterLimit: 1000000 }),
+    urlencoded({ limit: '10mb', extended: true, parameterLimit: 1000000 }),
   );
   app.enableCors();
   /**
    * Set up docs
    */
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document, customOptions);
-
+  setupDocs(app);
   /**
    * Start the app
    * @param port
    * @param callback
    */
-  await app.listen(env.PORT, async () =>
-    console.log(`Server running on ${env.PORT}`),
+  const config = app.get(ConfigService);
+
+  await app.listen(config.get('global.port'), async () =>
+    console.log(`Server running on ${config.get('global.port')}`),
   );
 }
 bootstrap();

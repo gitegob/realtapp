@@ -4,11 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateBidDto } from './dto/create-bid.dto';
 import { HouseService } from '../house/house.service';
-import {
-  sendNewBidEmail,
-  sendApprovedEmail,
-  sendRejectedEmail,
-} from '../config/email.config';
+import { EmailService } from '../shared/providers/email.service';
 
 @Injectable()
 export class BidService {
@@ -16,6 +12,7 @@ export class BidService {
     @InjectRepository(Bid)
     private readonly bidRepo: Repository<Bid>,
     private readonly houseService: HouseService,
+    private emailService: EmailService,
   ) {}
 
   /** Service: Create a bid
@@ -33,7 +30,7 @@ export class BidService {
     let newBid = new Bid();
     newBid = { ...newBid, ...createDto, bidder: user, house };
     await this.bidRepo.save(newBid);
-    await sendNewBidEmail(house.owner.email, 'new_bid', {
+    await this.emailService.sendNewBidEmail(house.owner.email, {
       name: house.owner.firstName,
       date: house.createdAt.toDateString(),
     });
@@ -106,7 +103,7 @@ export class BidService {
       if (b) b.status = 'REJECTED';
       await this.bidRepo.save(b);
     });
-    const result = await sendApprovedEmail(bid.bidder.email, 'approved_bid', {
+    const result = await this.emailService.sendApprovedEmail(bid.bidder.email, {
       name: bid.bidder.firstName,
       date: bid.createdAt.toDateString(),
     });
@@ -128,7 +125,7 @@ export class BidService {
     });
     bid.status = 'REJECTED';
     await this.bidRepo.save(bid);
-    const result = await sendRejectedEmail(bid.bidder.email, 'rejected_bid', {
+    const result = await this.emailService.sendApprovedEmail(bid.bidder.email, {
       name: bid.bidder.firstName,
       date: bid.createdAt.toDateString(),
     });
@@ -140,7 +137,7 @@ export class BidService {
    * @param options
    * @returns Promise<Bid[]>
    */
-  async find(options: any) {
+  async find(options: any): Promise<Bid[]> {
     const bids = await this.bidRepo.find(options);
     return bids;
   }
@@ -150,7 +147,7 @@ export class BidService {
    * @param options
    * @returns Promise<Bid>
    */
-  async findOne(options: any) {
+  async findOne(options: any): Promise<Bid> {
     const bid = await this.bidRepo.findOne(options);
     if (!bid)
       throw new NotFoundException(
@@ -164,7 +161,7 @@ export class BidService {
    * @param options
    * @returns Promise<'Bid deleted'>
    */
-  async delete(options: any) {
+  async delete(options: any): Promise<string> {
     const bid = await this.findOne(options);
     await this.bidRepo.delete(bid.id);
     return 'Bid deleted';
@@ -174,7 +171,7 @@ export class BidService {
    * @param user
    * @returns Promise<Bid[]>
    */
-  async getUserBids(user: any) {
+  async getUserBids(user: any): Promise<Bid[]> {
     const bids = await this.find({
       where: { bidder: user },
       relations: ['house'],
@@ -186,7 +183,7 @@ export class BidService {
    * @param bidId
    * @returns Promise<Bid>
    */
-  async getUserBid(user: any, bidId: string) {
+  async getUserBid(user: any, bidId: string): Promise<Bid> {
     const bid = await this.findOne({
       where: { id: bidId, bidder: user },
       relations: ['house'],
@@ -199,7 +196,7 @@ export class BidService {
    * @param bidId
    * @returns Promise<Bid>
    */
-  async deleteUserBid(user: any, bidId: string) {
+  async deleteUserBid(user: any, bidId: string): Promise<string> {
     await this.delete({
       where: { id: bidId, status: 'PENDING', bidder: user },
     });

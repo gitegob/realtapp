@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtStrategy } from './jwt.strategy';
 import { Module } from '@nestjs/common';
@@ -16,11 +17,15 @@ import { BidModule } from '../bid/bid.module';
       property: 'user',
       session: false,
     }),
-    JwtModule.register({
-      secret: env.JWT_SECRET,
-      signOptions: {
-        expiresIn: env.JWT_EXPIRES_IN,
-      },
+    JwtModule.registerAsync({
+      imports: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        secret: config.get('jwt.secret'),
+        signOptions: {
+          expiresIn: config.get('jwt.expiresIn'),
+        },
+      }),
+      inject: [ConfigService],
     }),
     BidModule,
   ],

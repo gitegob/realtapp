@@ -14,7 +14,6 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { HouseService } from './house.service';
 import { CreateHouseDto } from './dto/create-house.dto';
 import { OwnerDto } from '../auth/dto/owner.dto';
-import { editFileName, imageFileFilter } from '../utils/fileUpload.utils';
 import { diskStorage } from 'multer';
 import {
   ApiBearerAuth,
@@ -30,11 +29,24 @@ import { Patch } from '@nestjs/common';
 import { Param } from '@nestjs/common';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { UpdateHouseDto } from './dto/update-house.dto';
+import {
+  editFileName,
+  imageFilter,
+} from '../shared/providers/fileUpload.service';
 
 @ApiTags('Houses')
 @Controller('houses')
 @UseGuards(AuthGuard())
 @ApiBearerAuth()
+@UseInterceptors(
+  FilesInterceptor('files', 10, {
+    storage: diskStorage({
+      destination: './uploads',
+      filename: editFileName,
+    }),
+    fileFilter: imageFilter,
+  }),
+)
 export class HouseController {
   constructor(private readonly houseService: HouseService) {}
 
@@ -46,37 +58,6 @@ export class HouseController {
    * @return response
    */
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        files: {
-          type: 'string',
-          format: 'binary',
-        },
-        title: {
-          type: 'string',
-          default: 'Beautiful house',
-        },
-        description: {
-          type: 'string',
-          default: "This is beautiful house, don't miss it",
-        },
-        district: {
-          type: 'string',
-          default: 'KICUKIRO',
-        },
-        street: {
-          type: 'string',
-          default: 'KN203 ave',
-        },
-        price: {
-          type: 'number',
-          default: '10000',
-        },
-      },
-    },
-  })
   @ApiResponse({ status: 201, description: 'House posted successfully' })
   @ApiResponse({ status: 400, description: 'Bad entries' })
   @ApiResponse({ status: 401, description: 'Unauthorised' })
@@ -88,7 +69,7 @@ export class HouseController {
         destination: './uploads',
         filename: editFileName,
       }),
-      fileFilter: imageFileFilter,
+      fileFilter: imageFilter,
     }),
   )
   create(
@@ -123,50 +104,10 @@ export class HouseController {
    */
   @Patch('/:houseId')
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        files: {
-          type: 'string',
-          format: 'binary',
-        },
-        title: {
-          type: 'string',
-          default: 'Beautiful house',
-        },
-        description: {
-          type: 'string',
-          default: "This is beautiful house, don't miss it",
-        },
-        district: {
-          type: 'string',
-          default: 'KICUKIRO',
-        },
-        street: {
-          type: 'string',
-          default: 'KN203 ave',
-        },
-        price: {
-          type: 'number',
-          default: '10000',
-        },
-      },
-    },
-  })
   @ApiResponse({ status: 200, description: 'House updated successfully' })
   @ApiResponse({ status: 400, description: 'Bad entries' })
-  @ApiResponse({ status: 401, description: 'Unauthorised' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 500, description: 'Internal Server Error' })
-  @UseInterceptors(
-    FilesInterceptor('files', 10, {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: editFileName,
-      }),
-      fileFilter: imageFileFilter,
-    }),
-  )
   async update(
     @Param('houseId', ParseUUIDPipe)
     houseId: string,
