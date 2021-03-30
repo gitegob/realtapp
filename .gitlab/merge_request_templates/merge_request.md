@@ -12,7 +12,7 @@
 
 > **Provide the steps to manually test the functionalities implemented in this PR**
 
-- After cloning the [repo](https://github.com/niyodusengaclement/nest_todo_app.git), and `cd [the project name]`
+- After cloning the [repo](https://gitlab.com/realtapp-team/realtapp-backend), and `cd [the project name]`
 - Check out this branch by `git checkout [the branch for this pr]`
 - Run `npm install` to install the project dependencies
 - Run `npm run migrate` to migrate new tables to the database
