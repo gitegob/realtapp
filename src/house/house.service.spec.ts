@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { HouseRepositoryFake } from '../../test/utils/HouseRepositoryFake';
 import { cloudServiceMock } from '../../test/utils/mocks/cloudinary.service';
 import CloudinaryService from '../shared/providers/cloudinary.service';
@@ -9,7 +8,6 @@ import { HouseService } from './house.service';
 
 describe('HouseService', () => {
   let houseService: HouseService;
-  let houseRepo: Repository<House>;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -26,7 +24,6 @@ describe('HouseService', () => {
     }).compile();
 
     houseService = module.get<HouseService>(HouseService);
-    houseRepo = module.get(getRepositoryToken(House));
   });
 
   it('should be defined', () => {

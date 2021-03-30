@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { extname } from 'path';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Request } from 'express';

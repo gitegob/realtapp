@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MulterModule } from '@nestjs/platform-express';
 import { RateLimiterInterceptor, RateLimiterModule } from 'nestjs-rate-limiter';
@@ -11,6 +11,7 @@ import { BidModule } from './bid/bid.module';
 import { HouseModule } from './house/house.module';
 import config from './app.config';
 import { TypeOrmConfigService } from './shared/config/typeorm.config';
+import { ExceptionsFilter } from './shared/filters/exception.filter';
 
 @Module({
   imports: [
@@ -41,6 +42,10 @@ import { TypeOrmConfigService } from './shared/config/typeorm.config';
     {
       provide: APP_INTERCEPTOR,
       useClass: RateLimiterInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: ExceptionsFilter,
     },
   ],
   exports: [HouseModule],
