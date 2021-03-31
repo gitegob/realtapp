@@ -26,7 +26,9 @@ export class ExceptionsFilter implements ExceptionFilter {
     this.loggerService.error(exception.stack);
     response.status(status).json({
       statusCode: status,
-      error: isHttp ? exception.response.message : 'Internal Server Error',
+      error: isHttp
+        ? exception.response.message
+        : 'Sorry, An Internal Error Occurred.',
     });
   }
 }

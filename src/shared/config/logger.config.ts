@@ -31,4 +31,7 @@ export default {
       level: 'info',
     }),
   ],
+  rejectionHandlers: [
+    new transports.File({ filename: 'logs/exceptions-rejections.log' }),
+  ],
 };
