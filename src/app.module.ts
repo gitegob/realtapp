@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MulterModule } from '@nestjs/platform-express';
@@ -12,6 +12,8 @@ import { HouseModule } from './house/house.module';
 import config from './app.config';
 import { TypeOrmConfigService } from './shared/config/typeorm.config';
 import { ExceptionsFilter } from './shared/filters/exception.filter';
+import { LoggerInterceptor } from './shared/interceptors/logger.interceptor';
+import { ResponseInterceptor } from './shared/interceptors/res.interceptor';
 
 @Module({
   imports: [
@@ -39,9 +41,18 @@ import { ExceptionsFilter } from './shared/filters/exception.filter';
   controllers: [AppController],
   providers: [
     AppService,
+    Logger,
     {
       provide: APP_INTERCEPTOR,
       useClass: RateLimiterInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggerInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseInterceptor,
     },
     {
       provide: APP_FILTER,

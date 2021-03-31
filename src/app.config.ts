@@ -4,7 +4,7 @@ export default function () {
   return {
     global: {
       port: env.PORT,
-      nodeEnv: env.NODE_ENV,
+      environment: env.NODE_ENV,
       serverUrl: env.SERVER_URL,
     },
     db: {

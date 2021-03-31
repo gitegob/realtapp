@@ -2,11 +2,15 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { urlencoded, json } from 'express';
+import { WinstonModule } from 'nest-winston';
 import { AppModule } from './app.module';
+import loggerConfig from './shared/config/logger.config';
 import { setupDocs } from './shared/config/swagger.config';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: WinstonModule.createLogger(loggerConfig),
+  });
   /**
    * Add global prefix '<host>/api/'
    */

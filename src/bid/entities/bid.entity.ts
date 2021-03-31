@@ -7,6 +7,7 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { House } from '../../house/entities/house.entity';
+import { BidStatus } from '../../shared/interfaces/enum.interface';
 
 @Entity('bids')
 export class Bid {
@@ -17,12 +18,11 @@ export class Bid {
   price: number;
 
   @Column({
-    type: 'enum',
-    enum: ['PENDING', 'APPROVED', 'REJECTED'],
+    enum: BidStatus,
     nullable: false,
-    default: 'PENDING',
+    default: BidStatus.PENDING,
   })
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  status: BidStatus;
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

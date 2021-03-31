@@ -15,6 +15,8 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BidService } from './bid.service';
 import { User } from '../shared/decorators/user.decorator';
 import { JwtPayload } from '../shared/interfaces/payload.interface';
+import { Bid } from './entities/bid.entity';
+import { BidStatus } from '../shared/interfaces/enum.interface';
 
 @UseGuards(AuthGuard())
 @ApiBearerAuth()
@@ -54,7 +56,7 @@ export class BidController {
     @User() user: JwtPayload,
     @Param('houseId', ParseUUIDPipe)
     houseId: string,
-  ) {
+  ): Promise<{ data: Bid[] }> {
     return { data: await this.bidService.getAll(user, houseId) };
   }
 
@@ -73,7 +75,7 @@ export class BidController {
     houseId: string,
     @Param('bidId', ParseUUIDPipe)
     bidId: string,
-  ) {
+  ): Promise<{ data: Bid }> {
     return { data: await this.bidService.getOne(user, houseId, bidId) };
   }
   /** Route: Approve a single bid on a house
@@ -91,7 +93,12 @@ export class BidController {
     houseId: string,
     @Param('bidId', ParseUUIDPipe)
     bidId: string,
-  ) {
+  ): Promise<{
+    data: {
+      status: BidStatus.APPROVED;
+      email: string;
+    };
+  }> {
     return { data: await this.bidService.approve(user, houseId, bidId) };
   }
   /** Route: Reject a single bid on a house
@@ -109,7 +116,12 @@ export class BidController {
     houseId: string,
     @Param('bidId', ParseUUIDPipe)
     bidId: string,
-  ) {
+  ): Promise<{
+    data: {
+      status: BidStatus.REJECTED;
+      email: string;
+    };
+  }> {
     return { data: await this.bidService.reject(user, houseId, bidId) };
   }
 
@@ -136,7 +148,7 @@ export class BidController {
     @User() user: JwtPayload,
     @Param('bidId', ParseUUIDPipe)
     bidId: string,
-  ) {
+  ): Promise<{ data: Bid }> {
     return { data: await this.bidService.getUserBid(user, bidId) };
   }
 
@@ -152,7 +164,7 @@ export class BidController {
     @User() user: JwtPayload,
     @Param('bidId', ParseUUIDPipe)
     bidId: string,
-  ) {
+  ): Promise<{ data: string }> {
     return { data: await this.bidService.deleteUserBid(user, bidId) };
   }
 }

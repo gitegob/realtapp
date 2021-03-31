@@ -17,13 +17,14 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       password: this.config.get<string>('db.password'),
       database: this.config.get<string>('db.name'),
       entities: [User, House, Bid],
-      synchronize: this.config.get<string>('global.nodeEnv') !== 'production',
+      synchronize:
+        this.config.get<string>('global.environment') !== 'production',
       migrations: ['dist/src/db/migrations/*.js'],
       cli: {
         migrationsDir: 'src/db/migrations',
       },
       ssl:
-        this.config.get<string>('global.nodeEnv') === 'production'
+        this.config.get<string>('global.environment') === 'production'
           ? {
               rejectUnauthorized: false,
             }

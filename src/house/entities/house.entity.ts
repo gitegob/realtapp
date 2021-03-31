@@ -9,7 +9,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Bid } from '../../bid/entities/bid.entity';
-
+import { HouseStatus } from '../../shared/interfaces/enum.interface';
 @Entity('houses')
 export class House {
   @PrimaryGeneratedColumn('uuid')
@@ -37,12 +37,11 @@ export class House {
   price: number;
 
   @Column({
-    type: 'enum',
-    enum: ['AVAILABLE', 'TAKEN'],
+    enum: HouseStatus,
     nullable: false,
-    default: 'AVAILABLE',
+    default: HouseStatus.AVAILABLE,
   })
-  status: 'AVAILABLE' | 'TAKEN';
+  status: HouseStatus;
 
   @Column('text', { array: true })
   pictures: string[];

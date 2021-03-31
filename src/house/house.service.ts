@@ -7,6 +7,7 @@ import { HouseRoutesDto } from './dto/house-routes.dto';
 import { OwnerDto } from '../auth/dto/owner.dto';
 import { UpdateHouseDto } from './dto/update-house.dto';
 import CloudinaryService from '../shared/providers/cloudinary.service';
+import { HouseStatus } from '../shared/interfaces/enum.interface';
 
 @Injectable()
 export class HouseService {
@@ -70,8 +71,8 @@ export class HouseService {
   async findAll({ id }: OwnerDto, { target }: HouseRoutesDto) {
     const conditions =
       target === 'mine'
-        ? { owner: id, status: 'AVAILABLE' }
-        : { status: 'AVAILABLE' };
+        ? { owner: id, status: HouseStatus.AVAILABLE }
+        : { status: HouseStatus.AVAILABLE };
     const houses = await this.houseRepo.find({
       where: conditions,
     });
@@ -88,7 +89,7 @@ export class HouseService {
    */
   async update(id: string, updateHouseDto: UpdateHouseDto, req: any, files) {
     const house = await this.houseRepo.findOne({
-      where: { id, status: 'AVAILABLE', owner: req.user },
+      where: { id, status: HouseStatus.AVAILABLE, owner: req.user },
     });
     if (!house) {
       throw new NotFoundException(
@@ -118,7 +119,10 @@ export class HouseService {
    * @return response
    */
   async updateTakenHouse(houseId: string) {
-    return await this.houseRepo.update({ id: houseId }, { status: 'TAKEN' });
+    return await this.houseRepo.update(
+      { id: houseId },
+      { status: HouseStatus.TAKEN },
+    );
   }
 
   /** Delete bid
@@ -130,7 +134,7 @@ export class HouseService {
   async delete(houseId: string, req: any) {
     const house = await this.findOne({
       id: houseId,
-      status: 'AVAILABLE',
+      status: HouseStatus.AVAILABLE,
       owner: req.user,
     });
     await this.houseRepo.delete({ id: house.id });

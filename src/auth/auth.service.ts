@@ -25,7 +25,11 @@ export class AuthService {
    * @param signupDto
    * @returns access_token
    */
-  async create(signupDto: SignUpDto) {
+  async create(
+    signupDto: SignUpDto,
+  ): Promise<{
+    access_token: string;
+  }> {
     const user = await this.findOne({
       where: { email: signupDto.email },
     });
@@ -44,7 +48,7 @@ export class AuthService {
    * @param options
    * @returns
    */
-  async findOne(options: any) {
+  async findOne(options: any): Promise<User> {
     return await this.userRepo.findOne(options);
   }
 
@@ -53,7 +57,12 @@ export class AuthService {
    * @param loginDto
    * @returns access_token
    */
-  async login({ email, password }: LogInDto) {
+  async logIn({
+    email,
+    password,
+  }: LogInDto): Promise<{
+    access_token: string;
+  }> {
     const user = await this.findOne({ where: { email } });
     if (!user) throw new UnauthorizedException('Invalid credentials');
     const match = await bcrypt.compare(password, user.password);
@@ -67,7 +76,7 @@ export class AuthService {
    * @param payload
    * @returns Promise<User>
    */
-  async validateUser(payload: JwtPayload) {
+  async validateUser(payload: JwtPayload): Promise<User> {
     const user = await this.findOne({
       where: { email: payload.email },
     });
