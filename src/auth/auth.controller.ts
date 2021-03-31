@@ -1,5 +1,5 @@
 import { LogInDto } from './dto/login.dto';
-import { Controller, Post, Body, HttpCode } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/signup.dto';
@@ -22,7 +22,13 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'Sign up successful' })
   @ApiResponse({ status: 400, description: 'Bad entries' })
   @ApiResponse({ status: 429, description: 'Too may requests' })
-  async signUp(@Body() signUpDto: SignUpDto) {
+  async signUp(
+    @Body() signUpDto: SignUpDto,
+  ): Promise<{
+    data: {
+      access_token: string;
+    };
+  }> {
     return { data: await this.authService.create(signUpDto) };
   }
 
@@ -35,12 +41,18 @@ export class AuthController {
     keyPrefix: 'signIn',
     points: 3,
   })
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   @Post('/login')
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
   @ApiResponse({ status: 429, description: 'Too may requests' })
-  async login(@Body() loginDto: LogInDto) {
-    return { data: await this.authService.login(loginDto) };
+  async logIn(
+    @Body() loginDto: LogInDto,
+  ): Promise<{
+    data: {
+      access_token: string;
+    };
+  }> {
+    return { data: await this.authService.logIn(loginDto) };
   }
 }

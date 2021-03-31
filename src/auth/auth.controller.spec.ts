@@ -16,7 +16,7 @@ describe('Auth Controller', () => {
           provide: AuthService,
           useFactory: () => ({
             create: jest.fn(() => true),
-            login: jest.fn(() => true),
+            logIn: jest.fn(() => true),
           }),
         },
       ],
@@ -36,7 +36,7 @@ describe('Auth Controller', () => {
   });
 
   it('User should be able to login', async () => {
-    authController.login(mockdata.login);
-    expect(spyService.login).toHaveBeenCalledWith(mockdata.login);
+    authController.logIn(mockdata.login);
+    expect(spyService.logIn).toHaveBeenCalledWith(mockdata.login);
   });
 });

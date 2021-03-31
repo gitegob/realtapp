@@ -56,7 +56,7 @@ export class HouseController {
    * @params user info
    * @return response
    */
-  @ApiConsumes('multipart/form-data')
+  @ApiConsumes('multipart/form-data', 'application/json')
   @ApiResponse({ status: 201, description: 'House posted successfully' })
   @ApiResponse({ status: 400, description: 'Bad entries' })
   @ApiResponse({ status: 401, description: 'Unauthorised' })
@@ -102,7 +102,7 @@ export class HouseController {
    * @returns success
    */
   @Patch('/:houseId')
-  @ApiConsumes('multipart/form-data')
+  @ApiConsumes('multipart/form-data', 'application/json')
   @ApiResponse({ status: 200, description: 'House updated successfully' })
   @ApiResponse({ status: 400, description: 'Bad entries' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })

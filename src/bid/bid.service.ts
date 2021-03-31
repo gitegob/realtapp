@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateBidDto } from './dto/create-bid.dto';
 import { HouseService } from '../house/house.service';
 import { EmailService } from '../shared/providers/email.service';
+import { BidStatus } from '../shared/interfaces/enum.interface';
 
 @Injectable()
 export class BidService {
@@ -47,8 +48,8 @@ export class BidService {
     });
     const bids = await this.bidRepo.find({
       where: [
-        { house, status: 'PENDING' },
-        { house, status: 'APPROVED' },
+        { house, status: BidStatus.PENDING },
+        { house, status: BidStatus.APPROVED },
       ],
       relations: ['bidder'],
     });
@@ -69,8 +70,8 @@ export class BidService {
     });
     const bid = await this.bidRepo.findOne({
       where: [
-        { id: bidId, house, status: 'PENDING' },
-        { id: bidId, house, status: 'APPROVED' },
+        { id: bidId, house, status: BidStatus.PENDING },
+        { id: bidId, house, status: BidStatus.APPROVED },
       ],
       relations: ['bidder'],
     });
@@ -89,18 +90,18 @@ export class BidService {
       where: { owner: user, id: houseId },
     });
     const bid = await this.findOne({
-      where: [{ id: bidId, house, status: 'PENDING' }],
+      where: [{ id: bidId, house, status: BidStatus.PENDING }],
       relations: ['bidder'],
     });
-    bid.status = 'APPROVED';
+    bid.status = BidStatus.APPROVED;
     await this.bidRepo.save(bid);
     await this.houseService.updateTakenHouse(houseId);
     (
       await this.find({
-        where: { house, status: 'PENDING' },
+        where: { house, status: BidStatus.PENDING },
       })
     ).forEach(async (b) => {
-      if (b) b.status = 'REJECTED';
+      if (b) b.status = BidStatus.REJECTED;
       await this.bidRepo.save(b);
     });
     const result = await this.emailService.sendApprovedEmail(bid.bidder.email, {
@@ -120,10 +121,10 @@ export class BidService {
       where: { owner: user, id: houseId },
     });
     const bid = await this.findOne({
-      where: { id: bidId, house, status: 'PENDING' },
+      where: { id: bidId, house, status: BidStatus.PENDING },
       relations: ['bidder'],
     });
-    bid.status = 'REJECTED';
+    bid.status = BidStatus.REJECTED;
     await this.bidRepo.save(bid);
     const result = await this.emailService.sendApprovedEmail(bid.bidder.email, {
       name: bid.bidder.firstName,
@@ -198,7 +199,7 @@ export class BidService {
    */
   async deleteUserBid(user: any, bidId: string): Promise<string> {
     await this.delete({
-      where: { id: bidId, status: 'PENDING', bidder: user },
+      where: { id: bidId, status: BidStatus.PENDING, bidder: user },
     });
     return 'Bid cancelled';
   }
