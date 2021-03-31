@@ -8,6 +8,7 @@ import { OwnerDto } from '../auth/dto/owner.dto';
 import { UpdateHouseDto } from './dto/update-house.dto';
 import CloudinaryService from '../shared/providers/cloudinary.service';
 import { HouseStatus } from '../shared/interfaces/enum.interface';
+import { HouseResponse } from './dto/HouseResponse.dto';
 
 @Injectable()
 export class HouseService {
@@ -24,7 +25,11 @@ export class HouseService {
    * @files entry images of a house
    * @return response
    */
-  async create(user: any, createHouseDto: CreateHouseDto, files: any) {
+  async create(
+    user: any,
+    createHouseDto: CreateHouseDto,
+    files: any,
+  ): Promise<House> {
     let pics = [];
     if (files && files.length) {
       for (const file of files) {
@@ -44,7 +49,7 @@ export class HouseService {
     });
     const createdHouse = await this.houseRepo.save(house);
     delete createdHouse.owner.password;
-    return { message: 'House successfully posted', data: createdHouse };
+    return createdHouse;
   }
 
   /**
@@ -52,7 +57,7 @@ export class HouseService {
    * @params options
    * @return response
    */
-  async findOne(options: any) {
+  async findOne(options: any): Promise<House> {
     const house = await this.houseRepo.findOne(options);
     if (!house)
       throw new NotFoundException(
@@ -66,17 +71,29 @@ export class HouseService {
    * Get house posts
    * @req user info
    * @enum target type
-   * @return response
+   * @returns Promise
    */
-  async findAll({ id }: OwnerDto, { target }: HouseRoutesDto) {
+  async findAll(
+    { id }: OwnerDto,
+    houseRoutesDto: HouseRoutesDto,
+  ): Promise<HouseResponse> {
+    const target = houseRoutesDto.target;
     const conditions =
       target === 'mine'
         ? { owner: id, status: HouseStatus.AVAILABLE }
         : { status: HouseStatus.AVAILABLE };
-    const houses = await this.houseRepo.find({
+    const [result, total] = await this.houseRepo.findAndCount({
       where: conditions,
+      take: houseRoutesDto.limit,
+      skip: houseRoutesDto.limit * (houseRoutesDto.page - 1),
     });
-    return { message: 'List of houses found', data: houses };
+
+    return {
+      totalCount: total,
+      page: houseRoutesDto.page,
+      itemsPerPage: houseRoutesDto.limit,
+      rows: result,
+    };
   }
 
   /**
@@ -87,7 +104,12 @@ export class HouseService {
    * @files entry images of a house
    * @return response
    */
-  async update(id: string, updateHouseDto: UpdateHouseDto, req: any, files) {
+  async update(
+    id: string,
+    updateHouseDto: UpdateHouseDto,
+    req: any,
+    files,
+  ): Promise<any> {
     const house = await this.houseRepo.findOne({
       where: { id, status: HouseStatus.AVAILABLE, owner: req.user },
     });
@@ -118,7 +140,7 @@ export class HouseService {
    * @params house id
    * @return response
    */
-  async updateTakenHouse(houseId: string) {
+  async updateTakenHouse(houseId: string): Promise<any> {
     return await this.houseRepo.update(
       { id: houseId },
       { status: HouseStatus.TAKEN },
@@ -131,7 +153,7 @@ export class HouseService {
    * @param req
    * @returns response
    */
-  async delete(houseId: string, req: any) {
+  async delete(houseId: string, req: any): Promise<any> {
     const house = await this.findOne({
       id: houseId,
       status: HouseStatus.AVAILABLE,

@@ -89,9 +89,12 @@ export class HouseController {
   @ApiResponse({ status: 401, description: 'Unauthorised' })
   @ApiResponse({ status: 500, description: 'Internal Server Error' })
   @Get()
-  findAll(@Req() req: any, @Query() target: HouseRoutesDto) {
+  findAll(@Req() req: any, @Query() houseRoutesDto: HouseRoutesDto) {
     const user = <OwnerDto>req.user;
-    return this.houseService.findAll(user, target);
+    houseRoutesDto.page = Number(houseRoutesDto.page);
+    houseRoutesDto.limit = Number(houseRoutesDto.limit);
+
+    return this.houseService.findAll(user, houseRoutesDto);
   }
 
   /** Update a house info

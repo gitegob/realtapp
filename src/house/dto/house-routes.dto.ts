@@ -1,7 +1,8 @@
-import { IsEnum, IsNotEmpty } from 'class-validator';
+import { IsEnum, IsNumberString, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { PaginationDto } from '../../shared/dto/pagination.dto';
 
-export class HouseRoutesDto {
+export class HouseRoutesDto extends PaginationDto {
   @ApiProperty({
     enum: ['all', 'mine'],
     default: 'all',
@@ -12,4 +13,5 @@ export class HouseRoutesDto {
   })
   readonly target: string;
 }
+
 export type Target = 'all' | 'mine';

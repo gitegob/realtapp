@@ -40,7 +40,7 @@ describe('HouseController (e2e)', () => {
 
   it(`/GET Authenticated User should be able to view all available houses`, async () => {
     const res = await request(app.getHttpServer())
-      .get('/houses?target=all')
+      .get('/houses?target=all?page=1&limit=10')
       .set('Authorization', 'Bearer ' + mockData.token2);
     return expect(res.status).toEqual(200);
   });
@@ -49,7 +49,7 @@ describe('HouseController (e2e)', () => {
     const res = await request(app.getHttpServer())
       .get('/houses?target=mine')
       .set('Authorization', 'Bearer ' + mockData.token2);
-    mockData.houseId1 = res.body.data[0]?.id;
+    mockData.houseId1 = res.body.data?.rows[0]?.id;
     return expect(res.status).toEqual(200);
   });
 

@@ -64,6 +64,8 @@ describe('House Controller', () => {
       firstName: 'John',
     };
     const routes = {
+      page: 1,
+      limit: 10,
       target: 'all',
     };
     houseController.findAll(user, routes);
