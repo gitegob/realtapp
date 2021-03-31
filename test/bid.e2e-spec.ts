@@ -45,7 +45,7 @@ describe('BidController (e2e)', () => {
   });
   it(`/GET Get all bids on a house`, async () => {
     const res = await request(app.getHttpServer())
-      .get(`/bids/house/${mockData.houseId1}`)
+      .get(`/bids/house/${mockData.houseId1}?page=1&limit=10`)
       .set('Authorization', `Bearer ${mockData.token1}`);
     expect(res.status).toEqual(200);
     return;
@@ -59,7 +59,7 @@ describe('BidController (e2e)', () => {
   });
   it(`/GET Get all bids by a user`, async () => {
     const res = await request(app.getHttpServer())
-      .get('/bids/user')
+      .get('/bids/user?page=1&limit=10')
       .set('Authorization', `Bearer ${mockData.token1}`);
     expect(res.status).toEqual(200);
     return;

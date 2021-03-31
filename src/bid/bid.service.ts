@@ -6,6 +6,8 @@ import { CreateBidDto } from './dto/create-bid.dto';
 import { HouseService } from '../house/house.service';
 import { EmailService } from '../shared/providers/email.service';
 import { BidStatus } from '../shared/interfaces/enum.interface';
+import { PaginationDto } from '../shared/dto/pagination.dto';
+import { BidResponse } from './dto/BidResponse.dto';
 
 @Injectable()
 export class BidService {
@@ -42,21 +44,34 @@ export class BidService {
    * @param houseId
    * @returns Promise<Bid[]>
    */
-  async getAll(user: any, houseId: string) {
+  async getAll(
+    user: any,
+    houseId: string,
+    paginationDto: PaginationDto,
+  ): Promise<BidResponse> {
     const house = await this.houseService.findOne({
       where: { owner: user, id: houseId },
     });
-    const bids = await this.bidRepo.find({
+    const [result, total] = await this.bidRepo.findAndCount({
       where: [
         { house, status: BidStatus.PENDING },
         { house, status: BidStatus.APPROVED },
       ],
       relations: ['bidder'],
+      take: paginationDto.limit,
+      skip: paginationDto.limit * (paginationDto.page - 1),
     });
-    return bids.map((bid) => {
-      delete bid.bidder.password;
+
+    const bids = result?.map((bid) => {
+      delete bid?.bidder?.password;
       return bid;
     });
+    return {
+      totalCount: total,
+      page: paginationDto.page,
+      itemsPerPage: paginationDto.limit,
+      rows: bids,
+    };
   }
   /** Service: Get one bid on the house
    * @param user
@@ -96,19 +111,18 @@ export class BidService {
     bid.status = BidStatus.APPROVED;
     await this.bidRepo.save(bid);
     await this.houseService.updateTakenHouse(houseId);
-    (
-      await this.find({
-        where: { house, status: BidStatus.PENDING },
-      })
-    ).forEach(async (b) => {
+    const [result] = await this.find({
+      where: { house, status: BidStatus.PENDING },
+    });
+    result?.forEach(async (b) => {
       if (b) b.status = BidStatus.REJECTED;
       await this.bidRepo.save(b);
     });
-    const result = await this.emailService.sendApprovedEmail(bid.bidder.email, {
+    const res = await this.emailService.sendApprovedEmail(bid.bidder.email, {
       name: bid.bidder.firstName,
       date: bid.createdAt.toDateString(),
     });
-    return { status: bid.status, email: result === 200 ? 'Sent' : 'Not sent' };
+    return { status: bid.status, email: res === 200 ? 'Sent' : 'Not sent' };
   }
   /** Service: Reject one bid on the house
    * @param user
@@ -138,8 +152,8 @@ export class BidService {
    * @param options
    * @returns Promise<Bid[]>
    */
-  async find(options: any): Promise<Bid[]> {
-    const bids = await this.bidRepo.find(options);
+  async find(options: any): Promise<any> {
+    const bids = await this.bidRepo.findAndCount(options);
     return bids;
   }
 
@@ -172,12 +186,22 @@ export class BidService {
    * @param user
    * @returns Promise<Bid[]>
    */
-  async getUserBids(user: any): Promise<Bid[]> {
-    const bids = await this.find({
+  async getUserBids(
+    user: any,
+    paginationDto: PaginationDto,
+  ): Promise<BidResponse> {
+    const [result, total] = await this.find({
       where: { bidder: user },
       relations: ['house'],
+      take: paginationDto.limit,
+      skip: paginationDto.limit * (paginationDto.page - 1),
     });
-    return bids;
+    return {
+      totalCount: total,
+      page: paginationDto.page,
+      itemsPerPage: paginationDto.limit,
+      rows: result,
+    };
   }
   /** Service: Get one bid of a user
    * @param user

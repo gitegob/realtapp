@@ -17,6 +17,8 @@ import { User } from '../shared/decorators/user.decorator';
 import { JwtPayload } from '../shared/interfaces/payload.interface';
 import { Bid } from './entities/bid.entity';
 import { BidStatus } from '../shared/interfaces/enum.interface';
+import { PaginationDto } from '../shared/dto/pagination.dto';
+import { Query } from '@nestjs/common';
 
 @UseGuards(AuthGuard())
 @ApiBearerAuth()
@@ -56,8 +58,9 @@ export class BidController {
     @User() user: JwtPayload,
     @Param('houseId', ParseUUIDPipe)
     houseId: string,
-  ): Promise<{ data: Bid[] }> {
-    return { data: await this.bidService.getAll(user, houseId) };
+    @Query() paginationDto: PaginationDto,
+  ) {
+    return await this.bidService.getAll(user, houseId, paginationDto);
   }
 
   /** Route: Get a single bid on a house
@@ -132,8 +135,11 @@ export class BidController {
   @Get('/user')
   @ApiResponse({ status: 200, description: 'All Bids retrieved' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async getUserBids(@User() user: JwtPayload) {
-    return { data: await this.bidService.getUserBids(user) };
+  async getUserBids(
+    @User() user: JwtPayload,
+    @Query() paginationDto: PaginationDto,
+  ) {
+    return { data: await this.bidService.getUserBids(user, paginationDto) };
   }
 
   /** Route: Get a single bid by a user

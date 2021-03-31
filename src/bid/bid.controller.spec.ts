@@ -7,6 +7,10 @@ describe('Bid Controller', () => {
   let bidController: BidController;
   let testingModule: TestingModule;
   let spyService: BidService;
+  const pagination = {
+    page: 1,
+    limit: 10,
+  };
   const user = {
     id: 'uuid',
     firstName: 'Mistico',
@@ -53,8 +57,8 @@ describe('Bid Controller', () => {
   });
 
   it('Should get all bids of a house', async () => {
-    bidController.getBids(user, houseId);
-    expect(spyService.getAll).toHaveBeenCalledWith(user, houseId);
+    bidController.getBids(user, houseId, pagination);
+    expect(spyService.getAll).toHaveBeenCalledWith(user, houseId, pagination);
   });
 
   it('Should get a specific house', async () => {
