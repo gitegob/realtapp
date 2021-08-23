@@ -36,5 +36,5 @@ $ npm run test:cov
 
 ## Authors
 
-- [Mistico Clement](https://gitlab.com/niyodusengaclement)
 - [Brian Gitego](https://gitlab.com/gitego-brian)
+- [Mistico Clement](https://gitlab.com/niyodusengaclement)
